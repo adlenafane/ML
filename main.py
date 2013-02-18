@@ -1,5 +1,6 @@
 import os, sys, time, glob, datetime, pprint
 import h5py
+import hdf5_getters
 import sqlite3
 import numpy as np
 
