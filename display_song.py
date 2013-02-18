@@ -117,14 +117,14 @@ if __name__ == '__main__':
                 print 'forgot -summary flag? specified wrong getter?'
         if res.__class__.__name__ == 'ndarray':
             print getter[4:]+": shape =",res.shape
-            print "adlen"
             with open('song.txt', 'a+') as f:
-                f.write(getter[4:]+": shape =",res.shape)
+                f.write(getter[4:]+": shape =" + str(res.shape) + '\n')
         else:
             print getter[4:]+":",res
             with open('song.txt', 'a+') as f:
-                f.write(getter[4:]+": shape =",res.shape)
+                f.write(getter[4:]+":" + str(res) + '\n')
 
     # done
     print 'DONE, showed song',songidx,'/',numSongs-1,'in file:',hdf5path
     h5.close()
+    
