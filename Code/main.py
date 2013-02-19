@@ -12,9 +12,12 @@ assert os.path.isdir(msd_subset_path),'wrong path' # sanity check
 
 #sys.path.append( os.path.join(msd_code_path,'PythonSrc') )
 
+#------------------------------------------------------------------------------ 
 def strTimeDelta(starttime, stoptime):
 	return str(datetime.timedelta(seconds=stoptime - starttime))
+#------------------------------------------------------------------------------ 
 
+#------------------------------------------------------------------------------ 
 # Function to iterate throught files
 def applyToAllFiles(basedir, func = lambda x: x, ext= '.h5'):
 	"""
@@ -39,10 +42,10 @@ def applyToAllFiles(basedir, func = lambda x: x, ext= '.h5'):
 		for f in files :
 			func(f)
 	return cnt
-#print 'number of song files:', applyToAllFiles(msd_subset_data_path)
+#------------------------------------------------------------------------------ 
 
-allArtistNames = set()
 
+#------------------------------------------------------------------------------ 
 def getArtistName(filename):
 	"""
 	This function does 3 simple things:
@@ -53,6 +56,12 @@ def getArtistName(filename):
 	with h5py.File(filename) as h5:
 		artist_name = h5py.get_artist_name(h5)
 		all_artist_names.add( artist_name )
+#------------------------------------------------------------------------------ 
+
+
+#print 'number of song files:', applyToAllFiles(msd_subset_data_path)
+
+allArtistNames = set()
 
 h5 = h5py.File('C:\Users\Adlen\Documents\GitHub\ML\MillionSongSubset\data\A\A\A\TRAAAAW128F429D538.h5')
 list_of_names = []
