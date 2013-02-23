@@ -1,4 +1,5 @@
-ML
-==
+# Machine Learning project
 
-Projet de Machine Learning
+## Useful links:  
+- Million song dataset FAQ: http://labrosa.ee.columbia.edu/millionsong/faq  
+- API Lyrics: http://www.chartlyrics.com/api.aspx
