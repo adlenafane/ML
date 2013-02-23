@@ -13,7 +13,7 @@ import sqlite3
 import time
 import datetime
 import numpy
-import pylab
+import matplotlib.pyplot as pyplot
 
 #==============================================================================
 # TO CONFIGURE
@@ -87,15 +87,16 @@ width = 1
 center = (bins[:-1]+bins[1:])/2
 
 
-pylab.figure()
-pylab.subplot(1,2,1)
-pylab.bar(center, hist, align = 'center', width = width)
+fig = pyplot.figure()
 
-pylab.xlim(min_songs-1, max_songs+1)
-pylab.xticks(center)
+pyplot.subplot(1,2,1)
+pyplot.bar(center, hist, align = 'center', width = width)
 
-pylab.xlabel('Number of songs')
-pylab.ylabel('Number of artists')
+pyplot.xlim(min_songs-1, max_songs+1)
+pyplot.xticks(center, fontsize = 12)
+
+pyplot.xlabel('Number of songs', fontsize= 12)
+pyplot.ylabel('Number of artists')
 
 
 t2 = time.time()
@@ -129,14 +130,14 @@ hist = numpy.histogram(nb_tags, bins)[0]
 width = 1
 center = (bins[:-1]+bins[1:])/2
 
-pylab.subplot(1,2,2)
-pylab.bar(center, hist, align = 'center', width = width)
+pyplot.subplot(1,2,2)
+pyplot.bar(center, hist, align = 'center', width = width)
 
-pylab.xlim(min_tags-1, max_tags+1)
-pylab.xticks(center)
+pyplot.xlim(min_tags-1, max_tags+1)
+pyplot.xticks(center)
 
-pylab.xlabel('Number of mbtags')
-pylab.ylabel('Number of artists')
+pyplot.xlabel('Number of mbtags')
+pyplot.ylabel('Number of artists')
 
 t2 = time.time()
 
@@ -151,8 +152,8 @@ conn.close()
 t_end = time.time()
 print('\n"simple_stats.py": DONE --executed in: '+ strtimedelta(t_start,t_end))
 #
-pylab.savefig('new_fig.pdf', dpi= 100)
-pylab.show()
+pyplot.savefig('new_fig.pdf', dpi= 100)
+pyplot.show()
 #
 #==============================================================================
 # END OF FILE
