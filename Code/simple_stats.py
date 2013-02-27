@@ -19,8 +19,9 @@ import matplotlib.pyplot as pyplot
 # TO CONFIGURE
 #==============================================================================
 # path to the folder 'AdditionalFiles'
-path_to_DB = ('/home/octave/workspace/Py_ML_Adlen/MillionSongSubset/\
-AdditionalFiles')
+# path_to_DB = ('/home/octave/workspace/Py_ML_Adlen/MillionSongSubset/\
+# AdditionalFiles')
+path_to_DB = ('../MillionSongSubset/AdditionalFiles')
 #==============================================================================
 # Checking path & defining a useful function
 print(
