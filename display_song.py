@@ -117,8 +117,6 @@ if __name__ == '__main__':
                 print 'forgot -summary flag? specified wrong getter?'
         if res.__class__.__name__ == 'ndarray':
             print getter[4:]+": shape =",res.shape
-            for i in res.shape:
-                print i
             with open('song.txt', 'a+') as f:
                 f.write(getter[4:]+": shape =" + str(res.shape) + '\n')
         else:
