@@ -16,18 +16,24 @@ from sklearn.datasets.samples_generator import make_blobs
 # pprint.pprint(labels_true)
 
 # Retrieve correct data
-with open('normOutput.txt', 'rb') as f:
+with open('normOutputClean.txt', 'rb') as f:
     X = cPickle.load(f)
+
+print "file loaded"
+print "len X", len(X)
+print "X", X
 
 ##############################################################################
 # Compute similarities
-# D = distance.squareform(distance.pdist(X))
-# pprint.pprint(D)
-# S = 1 - (D / np.max(D))
+D = distance.squareform(distance.pdist(X))
+S = 1 - (D / np.max(D))
+print "S"
+pprint.pprint(S)
 
 ##############################################################################
 # Compute DBSCAN
-db = DBSCAN(eps=0.95, min_samples=10).fit(X)
+db = DBSCAN(eps=0.95, min_samples=10).fit(S)
+print "db done"
 core_samples = db.core_sample_indices_
 labels = db.labels_
 

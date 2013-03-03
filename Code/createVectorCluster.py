@@ -44,10 +44,9 @@ def apply_to_all_files(basedir,func=lambda x, y: x,ext='.h5'):
         cnt += len(files)
         # apply function to all files
         for f in files :
-            if count < 100:
-                print "count", count
-                func(f, count)
-                count+=1
+            print "count", count
+            func(f, count)
+            count+=1
     return cnt
 
 # Get the number of files
@@ -56,10 +55,10 @@ print 'number of song files:', numberOfSongs
 
 # let's now get all artist names in a set(). One nice property:
 # if we enter many times the same artist, only one will be kept.
-all_desired_data = np.empty(shape=(numberOfSongs,8))
+all_desired_data = np.empty(shape=(numberOfSongs,6))
 match_songId_row = {}
 
-# we define the function to apply to all files
+# we define the function to apply to al_l files
 def func_to_get_desired_values(filename, count):
     """
     This function does 4 simple things:
@@ -76,9 +75,9 @@ def func_to_get_desired_values(filename, count):
     # Create and fill a record
     record = []
     
-    record.append(GETTERS.get_danceability(h5))
+    #record.append(GETTERS.get_danceability(h5))
     record.append(GETTERS.get_duration(h5))
-    record.append(GETTERS.get_energy(h5))
+    #record.append(GETTERS.get_energy(h5))
     record.append(GETTERS.get_loudness(h5))
     record.append(GETTERS.get_mode(h5))
     record.append(GETTERS.get_tempo(h5))
@@ -102,6 +101,12 @@ print 'all artist names extracted in:',strtimedelta(t1,t2)
 # Save raw output
 with open('rawOutput.txt', 'wb') as f:
     cPickle.dump(all_desired_data, f)
+
+with open('rawOutputExtract.txt', 'wb') as f:
+    extract = []
+    for i in range(100):
+        extract.append(all_desired_data[i])
+    cPickle.dump(extract, f)
 
 # Save match
 with open('correspondance.txt', 'wb') as f:
@@ -145,3 +150,16 @@ for k in range(5):
 # Save normalized output
 with open('normOutput.txt', 'wb') as f:
     cPickle.dump(all_desired_data, f)
+
+with open('normOutputExtract.txt', 'wb') as f:
+    extract = []
+    for i in range(100):
+        extract.append(all_desired_data[i])
+    cPickle.dump(extract, f)
+
+with open('normOutputClean.txt', 'wb') as f:
+    extract = []
+    for i in range(len(all_desired_data)):
+        if all_desired_data[i][0] != 0 and all_desired_data[i][1] != 0 and all_desired_data[i][2] != 0 and all_desired_data[i][3] != 0 and all_desired_data[i][4] != 0 and all_desired_data[i][5] != 0 :
+            extract.append(all_desired_data[i])
+    cPickle.dump(extract, f)
