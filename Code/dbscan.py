@@ -4,8 +4,6 @@ import numpy as np
 import pprint, cPickle
 from scipy.spatial import distance
 from sklearn.cluster import DBSCAN
-from sklearn import metrics
-from sklearn.datasets.samples_generator import make_blobs
 
 
 ##############################################################################
@@ -21,14 +19,11 @@ with open('normOutputClean.txt', 'rb') as f:
 
 print "file loaded"
 print "len X", len(X)
-print "X", X
 
 ##############################################################################
 # Compute similarities
 D = distance.squareform(distance.pdist(X))
 S = 1 - (D / np.max(D))
-print "S"
-pprint.pprint(S)
 
 ##############################################################################
 # Compute DBSCAN
@@ -36,6 +31,9 @@ db = DBSCAN(eps=0.95, min_samples=10).fit(S)
 print "db done"
 core_samples = db.core_sample_indices_
 labels = db.labels_
+with open('labels.txt', 'w') as f:
+    for label in labels:
+        pprint.pprint(label[0])
 
 # Number of clusters in labels, ignoring noise if present.
 n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
@@ -76,7 +74,7 @@ for k, col in zip(set(labels), colors):
             markersize = 14
         else:
             markersize = 6
-        pl.plot(x[0], x[1], 'o', markerfacecolor=col,
+        pl.plot(x[0], x[3], 'o', markerfacecolor=col,
                 markeredgecolor='k', markersize=markersize)
 
 pl.title('Estimated number of clusters: %d' % n_clusters_)

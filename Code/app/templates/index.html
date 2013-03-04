@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+	<h1>Vector creation</h1>
+	<div>
+		<form action="confirmQuery" method="get">
+			<fieldset>
+				<label>Enter the filename of the output</label>
+				<input type="text" name="filename" placeholder="Filename">
+				<label>Choose the elements in your vector</label>
+				{% for row in rows %}
+					<label class="checkbox">
+					<input type="checkbox" name=fields value={{row['function']}}>{{row['description']}}<br>
+					</label>
+				{% endfor %}
+				<button type="submit" class="btn">Submit</button>
+			</fieldset>
+		</form>
+	</div>
+{% endblock %}

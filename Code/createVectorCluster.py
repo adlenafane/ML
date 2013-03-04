@@ -1,17 +1,27 @@
+"""
+    Script to import and transform data from the MillionSongSubset
+
+    Inspired by the work of :
+    Thierry Bertin-Mahieux (2010) Columbia University
+    tb2332@columbia.edu
+"""
 # usual imports
 import os
-import sys
 import time
 import glob
 import datetime
 import cPickle
-import numpy as np # get it at: http://numpy.scipy.org/
+import numpy as np
+
 # path to the Million Song Dataset subset (uncompressed)
-# CHANGE IT TO YOUR LOCAL CONFIGURATION
 msd_subset_path='../MillionSongSubset'
 msd_subset_data_path=os.path.join(msd_subset_path,'data')
 msd_subset_addf_path=os.path.join(msd_subset_path,'AdditionalFiles')
 assert os.path.isdir(msd_subset_path),'wrong path' # sanity check
+
+all_desired_data = []
+all_desired_data_normalized = []
+elementsRequested = []
 
 # imports specific to the MSD
 import hdf5_getters as GETTERS
@@ -22,7 +32,7 @@ def strtimedelta(starttime,stoptime):
     return str(datetime.timedelta(seconds=stoptime-starttime))
 
 # we define this very useful function to iterate the files
-def apply_to_all_files(basedir,func=lambda x, y: x,ext='.h5'):
+def apply_to_all_files(basedir, func=lambda x, y: x,ext='.h5'):
     """
     From a base directory, go through all subdirectories,
     find all files with the given extension, apply the
@@ -49,23 +59,22 @@ def apply_to_all_files(basedir,func=lambda x, y: x,ext='.h5'):
             count+=1
     return cnt
 
-# Get the number of files
-numberOfSongs = apply_to_all_files(msd_subset_data_path)
-print 'number of song files:', numberOfSongs
 
-# let's now get all artist names in a set(). One nice property:
-# if we enter many times the same artist, only one will be kept.
-all_desired_data = np.empty(shape=(numberOfSongs,6))
+
 match_songId_row = {}
 
 # we define the function to apply to al_l files
 def func_to_get_desired_values(filename, count):
     """
-    This function does 4 simple things:
+    This function does 3 simple things:
     - open the song file
     - get the elements we want and put them in
     - close the file
+    INPUT : 
+    filename    - The name of the h5 file to be loaded
+    count       - The value of the current row to be loaded
     """
+    global all_desired_data
     # Open file
     h5 = GETTERS.open_h5_file_read(filename)
     
@@ -74,92 +83,123 @@ def func_to_get_desired_values(filename, count):
 
     # Create and fill a record
     record = []
-    
-    #record.append(GETTERS.get_danceability(h5))
-    record.append(GETTERS.get_duration(h5))
-    #record.append(GETTERS.get_energy(h5))
-    record.append(GETTERS.get_loudness(h5))
-    record.append(GETTERS.get_mode(h5))
-    record.append(GETTERS.get_tempo(h5))
-    record.append(GETTERS.get_time_signature(h5))
-    record.append(GETTERS.get_year(h5))
-    
-    record = np.array(record)
+    for element in elementsRequested:
+        record.append(getattr(GETTERS, element)(h5))
     
     # Add the record to the data
     all_desired_data[count] = record
     h5.close()
 
+def createNormalizedVector():
+    '''
+    From a vector containing all data, create the "normalized" version e.g. value
+    minus the minimum divided by the range 
+    --> Vector with same shape but values between 0 and 1
+    '''
+    global all_desired_data_normalized
+    all_desired_data_normalized = all_desired_data
 
-# let's apply the previous function to all files
-# we'll also measure how long it takes
-t1 = time.time()
-apply_to_all_files(msd_subset_data_path,func=func_to_get_desired_values)
-t2 = time.time()
-print 'all artist names extracted in:',strtimedelta(t1,t2)
+    # Let's normalize these data to have more similar values
+    min_array = [0]*len(all_desired_data[0])
+    max_array = [0]*len(all_desired_data[0])
+    range_array = [0]*len(all_desired_data[0])
 
-# Save raw output
-with open('rawOutput.txt', 'wb') as f:
-    cPickle.dump(all_desired_data, f)
+    for i in range(len(all_desired_data[0])):
+        min_array[i] = all_desired_data[0][i]
+        max_array[i] = all_desired_data[0][i]
 
-with open('rawOutputExtract.txt', 'wb') as f:
-    extract = []
-    for i in range(100):
-        extract.append(all_desired_data[i])
-    cPickle.dump(extract, f)
+    for record in all_desired_data:
+        for i in range(len(min_array)):
+            if record[i] < min_array[i]:
+                min_array[i] = record[i]
+            elif max_array[i] < record[i]:
+                max_array[i] = record[i]
 
-# Save match
-with open('correspondance.txt', 'wb') as f:
-    cPickle.dump(match_songId_row, f)
-
-# let's see some of the content of 'all_desired_data'
-print 'found',len(all_desired_data),'songs records'
-for k in range(5):
-    print all_desired_data[k]
-
-# Let's normalize these data to have more similar values
-min_array = [0]*len(all_desired_data[0])
-max_array = [0]*len(all_desired_data[0])
-range_array = [0]*len(all_desired_data[0])
-
-for i in range(len(all_desired_data[0])):
-    min_array[i] = all_desired_data[0][i]
-    max_array[i] = all_desired_data[0][i]
-
-for record in all_desired_data:
     for i in range(len(min_array)):
-        if record[i] < min_array[i]:
-            min_array[i] = record[i]
-        elif max_array[i] < record[i]:
-            max_array[i] = record[i]
+        range_array[i] = max_array[i] - min_array[i]
 
-for i in range(len(min_array)):
-    range_array[i] = max_array[i] - min_array[i]
+    record_index = 0
+    for record in all_desired_data:
+        for i in range(len(min_array)):
+            if range_array[i] != 0:
+                all_desired_data_normalized[record_index][i] = (record[i] - min_array[i]) / range_array[i]
+            else:
+                pass
+        record_index+=1
+    return all_desired_data_normalized
 
-for record in all_desired_data:
-    for i in range(len(min_array)):
-        if range_array[i] != 0:
-            record[i] = (record[i] - min_array[i]) / range_array[i]
-        else:
-            pass
+def createDataDump(filename):
+    '''
+        From 2 vectors (one raw and one normalized) create the cPickle dumps
+    '''
+    # Save raw output
+    with open('rawOutput' + filename + '.txt', 'wb') as f:
+        cPickle.dump(all_desired_data, f)
 
-# Let's take a look inside
-for k in range(5):
-    print all_desired_data[k]
-
-# Save normalized output
-with open('normOutput.txt', 'wb') as f:
-    cPickle.dump(all_desired_data, f)
-
-with open('normOutputExtract.txt', 'wb') as f:
-    extract = []
-    for i in range(100):
-        extract.append(all_desired_data[i])
-    cPickle.dump(extract, f)
-
-with open('normOutputClean.txt', 'wb') as f:
-    extract = []
-    for i in range(len(all_desired_data)):
-        if all_desired_data[i][0] != 0 and all_desired_data[i][1] != 0 and all_desired_data[i][2] != 0 and all_desired_data[i][3] != 0 and all_desired_data[i][4] != 0 and all_desired_data[i][5] != 0 :
+    with open('rawOutputExtract' + filename + '.txt', 'wb') as f:
+        extract = []
+        for i in range(100):
             extract.append(all_desired_data[i])
-    cPickle.dump(extract, f)
+        cPickle.dump(extract, f)
+
+    # with open('normOutput' + filename + '.txt', 'wb') as f:
+    #     cPickle.dump(all_desired_data_normalized, f)
+
+    # with open('normOutputExtract' + filename + '.txt', 'wb') as f:
+    #     extract = []
+    #     for i in range(100):
+    #         extract.append(all_desired_data_normalized[i])
+    #     cPickle.dump(extract, f)
+
+    # with open('normOutputClean' + filename + '.txt', 'wb') as f:
+    #     extract = []
+    #     for i in range(len(all_desired_data_normalized)):
+    #         dataOk = True
+    #         for j in all_desired_data_normalized[i]:
+    #             # We assume that 0 means not analyzed so we do not keep it
+    #             if j==0:
+    #                 dataOk = False
+    #                 break
+    #         if dataOk:
+    #             extract.append(all_desired_data_normalized[i])
+    #     cPickle.dump(extract, f)
+
+def createDesiredVector(elementsRequestedInput, filename):
+    '''
+        Will probably be used with a Flask server to retrieve the desired parameters
+        1. Create the shape of the output
+        2. Go through all files and retrieve the desired values
+        3. Create a normalized version of the output
+        4. Dump the 2 vectors
+    '''
+    print '##### Beginning Extration #####'
+    global elementsRequested
+    global all_desired_data
+    global all_desired_data_normalized
+
+    elementsRequested = elementsRequestedInput
+    print "elementsRequested", elementsRequested
+
+    # Get the number of files
+    numberOfSongs = apply_to_all_files(msd_subset_data_path)
+    print 'Number of song files:', numberOfSongs
+
+    # The parameters of the createDesired function and the shape size must me dynamics
+    global all_desired_data 
+    all_desired_data = np.empty(shape=(numberOfSongs,len(elementsRequested)))
+    print 'Output vector base prefilled'
+
+    # Go through all files and apply the function to get data
+    t1 = time.time()
+    apply_to_all_files(msd_subset_data_path, func=func_to_get_desired_values)
+    t2 = time.time()
+    print 'all data extracted in:',strtimedelta(t1,t2)
+
+    # Create a normalized vector of the data
+    #all_desired_data_normalized = createNormalizedVector()
+    #print "Data normalized"
+
+    # Dump data with cPickle
+    createDataDump(filename)
+    print "Data dumped!!"
+    print '##### End of Extration #####'

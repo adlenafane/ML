@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+	<h1>Requested Vector</h1>
+	<span>You requested the following values</span>
+	<div>
+		<span><strong>Filename:</strong> {{filename}}</span></br>
+		<span><strong>Elements:</strong> {{elementsRequested}}</span></br>
+	</div>
+	{% if not computationEnded %}
+	<div><strong>Computation in progress</strong></div>
+	{% else %}
+	<div><strong>Computation Ended !</strong></div>
+	{% endif %}
+{% endblock %}

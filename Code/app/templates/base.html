@@ -1,0 +1,17 @@
+<html>
+  <head>
+    {% if title %}
+    <title>{{title}} - Machine Learning</title>
+    {% else %}
+    <title>Machine Learning</title>
+    {% endif %}
+    <link href="/static/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <div>
+      Accueil: <a href="/index">Home</a>
+    </div>
+    <hr>
+    {% block content %}{% endblock %}
+  </body>
+</html>
