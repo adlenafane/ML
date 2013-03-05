@@ -1,7 +1,7 @@
 import cPickle, pprint
 
-with open('normOutputCleanfullNorm.txt', 'rb') as f:
+with open('./dump/normOutputCleanNicoTestKMeans2.txt', 'rb') as f:
     X = cPickle.load(f)
 
 pprint.pprint(X)
-print 'lenght', len(X[0])
+print 'lenght', len(X)

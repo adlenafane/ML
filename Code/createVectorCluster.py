@@ -58,7 +58,6 @@ def apply_to_all_files(basedir, func=lambda x, y: x,ext='.h5'):
         cnt += len(files)
         # apply function to all files
         for f in files :
-            print "count", count
             if count < 100:
                 func(f, count)
             else:
@@ -102,7 +101,6 @@ def func_to_get_desired_values(filename, count):
         try:
             if len(result) > 1:
                 result = float(np.mean(result))
-                print "mean", result
         except:
             try:
                 result = float(result)
@@ -111,9 +109,12 @@ def func_to_get_desired_values(filename, count):
         record.append(result)
 
     song_id = GETTERS.get_song_id(h5)
+    artist_name = GETTERS.get_artist_name(h5)
+    title = GETTERS.get_title(h5)
+
 
     # Add the record to the data
-    all_desired_data.append([song_id, record])
+    all_desired_data.append([[song_id, artist_name, title], record])
     h5.close()
 
 def createNormalizedVector():
@@ -136,7 +137,7 @@ def createNormalizedVector():
         min_array[i] = record_example[i]
         max_array[i] = record_example[i]
 
-    # all_desired_data is composed of couple [song_id, features asked]
+    # all_desired_data is composed of couple [[song_id], features asked]
     for couple in all_desired_data:
         record = couple[1]
         for i in range(len(min_array)):
@@ -211,20 +212,19 @@ def createDataDump(filename):
             print "Could not dump " + 'normOutputExtract' + filename + '.txt'
 
     with open(dump_path + 'normOutputClean' + filename + '.txt', 'wb') as f:
-        try:
-            extract = []
-            for i in range(len(all_desired_data_normalized)):
-                dataOk = True
-                for j in all_desired_data_normalized[i]:
-                    # We assume that 0 means not analyzed so we do not keep it
-                    if j==0 or j =='':
-                        dataOk = False
-                        break
-                if dataOk:
-                    extract.append(all_desired_data_normalized[i])
-            cPickle.dump(extract, f)
-        except:
-            print "Could not dump " + 'normOutputClean' + filename + '.txt'
+        extract = []
+        for i in range(len(all_desired_data_normalized)):
+            print all_desired_data_normalized[i][1]
+            dataOk = True
+            for j in all_desired_data_normalized[i][1]:
+                print j
+                # We assume that 0, '' and so on mean not analyzed so we do not keep it
+                if j == 0 or j == '' or j == '0':
+                    dataOk = False
+                    break
+            if dataOk:
+                extract.append(all_desired_data_normalized[i])
+        cPickle.dump(extract, f)
 
 def createDesiredVector(elementsRequestedInput, filename):
     '''
