@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 	<h1>Requested Vector</h1>
-	<span>You requested the following values</span>
+	<span>You have requested the following values:</span>
 	<div>
 		<span><strong>Filename:</strong> {{filename}}</span></br>
 		<span><strong>Elements:</strong> {{elementsRequested}}</span></br>
@@ -9,6 +9,44 @@
 	{% if not computationEnded %}
 	<div><strong>Computation in progress</strong></div>
 	{% else %}
-	<div><strong>Computation Ended !</strong></div>
+	<p class='text-success'><strong>Computation Ended !</strong></p>
 	{% endif %}
+	<p class="text-info"><strong>Sample of the raw output</strong></p>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				{% for element in elementsRequested %}
+				<th>{{element}}</th>
+				{% endfor %}
+			</tr>
+		</thead>
+		<tbody>
+			{% for sample in rawSamples %}
+				<tr>
+					{% for sampleElement in sample %}
+						<td>{{sampleElement}}</td>
+					{% endfor %}
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<p class="text-info"><strong>Sample of the normalized output</strong></p>
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				{% for element in elementsRequested %}
+				<th>{{element}}</th>
+				{% endfor %}
+			</tr>
+		</thead>
+		<tbody>
+			{% for sample in normSamples %}
+				<tr>
+					{% for sampleElement in sample %}
+						<td>{{sampleElement}}</td>
+					{% endfor %}
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
 {% endblock %}

@@ -1,6 +1,7 @@
-import pprint, cPickle
+import cPickle, pprint
 
-with open('rawOutputTest.txt', 'rb') as f:
+with open('normOutputCleanfullNorm.txt', 'rb') as f:
     X = cPickle.load(f)
 
 pprint.pprint(X)
+print 'lenght', len(X[0])

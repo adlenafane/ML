@@ -12,12 +12,16 @@ import glob
 import datetime
 import cPickle
 import numpy as np
+from sklearn import preprocessing
 
 # path to the Million Song Dataset subset (uncompressed)
 msd_subset_path='../MillionSongSubset'
 msd_subset_data_path=os.path.join(msd_subset_path,'data')
 msd_subset_addf_path=os.path.join(msd_subset_path,'AdditionalFiles')
 assert os.path.isdir(msd_subset_path),'wrong path' # sanity check
+
+# path for the dumps
+dump_path = './dump/'
 
 all_desired_data = []
 all_desired_data_normalized = []
@@ -55,8 +59,13 @@ def apply_to_all_files(basedir, func=lambda x, y: x,ext='.h5'):
         # apply function to all files
         for f in files :
             print "count", count
-            func(f, count)
+            if count < 100:
+                func(f, count)
+            else:
+                break
             count+=1
+        if count >= 100:
+            break
     return cnt
 
 
@@ -77,17 +86,32 @@ def func_to_get_desired_values(filename, count):
     global all_desired_data
     # Open file
     h5 = GETTERS.open_h5_file_read(filename)
-    
+
     # Add to the dictionnary the correspondance between row and song_id
     match_songId_row[count] = GETTERS.get_song_id(h5)
 
     # Create and fill a record
     record = []
     for element in elementsRequested:
-        record.append(getattr(GETTERS, element)(h5))
-    
+        result = getattr(GETTERS, element)(h5)
+        try:
+            if result == '':
+                result = 'Adlen - void'
+        except:
+            pass
+        try:
+            if len(result) > 1:
+                result = float(np.mean(result))
+                print "mean", result
+        except:
+            try:
+                result = float(result)
+            except:
+                pass
+        record.append(result)
+
     # Add the record to the data
-    all_desired_data[count] = record
+    all_desired_data.append(record)
     h5.close()
 
 def createNormalizedVector():
@@ -97,7 +121,6 @@ def createNormalizedVector():
     --> Vector with same shape but values between 0 and 1
     '''
     global all_desired_data_normalized
-    all_desired_data_normalized = all_desired_data
 
     # Let's normalize these data to have more similar values
     min_array = [0]*len(all_desired_data[0])
@@ -110,59 +133,90 @@ def createNormalizedVector():
 
     for record in all_desired_data:
         for i in range(len(min_array)):
-            if record[i] < min_array[i]:
-                min_array[i] = record[i]
-            elif max_array[i] < record[i]:
-                max_array[i] = record[i]
+            try:
+                if record[i] < min_array[i]:
+                    min_array[i] = record[i]
+                elif max_array[i] < record[i]:
+                    max_array[i] = record[i]
+            except:
+                pass
 
     for i in range(len(min_array)):
-        range_array[i] = max_array[i] - min_array[i]
+        try:
+            range_array[i] = max_array[i] - min_array[i]
+        except:
+            pass
 
-    record_index = 0
     for record in all_desired_data:
+        temp_record = []
         for i in range(len(min_array)):
-            if range_array[i] != 0:
-                all_desired_data_normalized[record_index][i] = (record[i] - min_array[i]) / range_array[i]
-            else:
-                pass
-        record_index+=1
+            try:
+                if range_array[i] != 0:
+                    temp_record.append((record[i] - min_array[i]) / range_array[i])
+                else:
+                    temp_record.append(record[i])
+                    pass
+            except:
+                temp_record.append(record[i])
+        all_desired_data_normalized.append(temp_record)
     return all_desired_data_normalized
 
 def createDataDump(filename):
     '''
-        From 2 vectors (one raw and one normalized) create the cPickle dumps
+        From 2 vectors (one raw and one normalized) create several cPickle dumps
     '''
     # Save raw output
-    with open('rawOutput' + filename + '.txt', 'wb') as f:
-        cPickle.dump(all_desired_data, f)
+    with open(dump_path + 'rawOutput' + filename + '.txt', 'wb') as f:
+        try:
+            cPickle.dump(all_desired_data, f)
+        except:
+            print "Could not dump " + 'rawOutput' + filename + '.txt'
 
-    with open('rawOutputExtract' + filename + '.txt', 'wb') as f:
-        extract = []
-        for i in range(100):
-            extract.append(all_desired_data[i])
-        cPickle.dump(extract, f)
+    with open(dump_path + 'rawOutputExtract' + filename + '.txt', 'wb') as f:
+        try:
+            extract = []
+            for i in range(100):
+                extract.append(all_desired_data[i])
+            cPickle.dump(extract, f)
+        except:
+            print "Could not dump " + 'rawOutputExtract' + filename + '.txt'
 
-    # with open('normOutput' + filename + '.txt', 'wb') as f:
-    #     cPickle.dump(all_desired_data_normalized, f)
+    with open(dump_path + 'preprocessedOutput' + filename + '.txt', 'wb') as f:
+        try:
+            cPickle(preprocessing.scale(all_desired_data), f)
+        except:
+            print "Could not dump " + 'preprocessedOutput' + filename + '.txt'
 
-    # with open('normOutputExtract' + filename + '.txt', 'wb') as f:
-    #     extract = []
-    #     for i in range(100):
-    #         extract.append(all_desired_data_normalized[i])
-    #     cPickle.dump(extract, f)
+    with open(dump_path + 'normOutput' + filename + '.txt', 'wb') as f:
+        try:
+            cPickle.dump(all_desired_data_normalized, f)
+        except:
+            print "Could not dump " + 'normOutput' + filename + '.txt'
 
-    # with open('normOutputClean' + filename + '.txt', 'wb') as f:
-    #     extract = []
-    #     for i in range(len(all_desired_data_normalized)):
-    #         dataOk = True
-    #         for j in all_desired_data_normalized[i]:
-    #             # We assume that 0 means not analyzed so we do not keep it
-    #             if j==0:
-    #                 dataOk = False
-    #                 break
-    #         if dataOk:
-    #             extract.append(all_desired_data_normalized[i])
-    #     cPickle.dump(extract, f)
+    with open(dump_path + 'normOutputExtract' + filename + '.txt', 'wb') as f:
+        try:
+            extract = []
+            for i in range(100):
+                extract.append(all_desired_data_normalized[i])
+            cPickle.dump(extract, f)
+        except:
+            print "Could not dump " + 'normOutputExtract' + filename + '.txt'
+
+    with open(dump_path + 'normOutputClean' + filename + '.txt', 'wb') as f:
+        try:
+            extract = []
+            for i in range(len(all_desired_data_normalized)):
+                dataOk = True
+                for j in all_desired_data_normalized[i]:
+                    # We assume that 0 means not analyzed so we do not keep it
+                    if j==0 or j =='':
+                        dataOk = False
+                        break
+                if dataOk:
+                    extract.append(all_desired_data_normalized[i])
+            cPickle.dump(extract, f)
+        except:
+            print "Could not dump " + 'normOutputClean' + filename + '.txt'
 
 def createDesiredVector(elementsRequestedInput, filename):
     '''
@@ -186,7 +240,6 @@ def createDesiredVector(elementsRequestedInput, filename):
 
     # The parameters of the createDesired function and the shape size must me dynamics
     global all_desired_data 
-    all_desired_data = np.empty(shape=(numberOfSongs,len(elementsRequested)))
     print 'Output vector base prefilled'
 
     # Go through all files and apply the function to get data
@@ -196,10 +249,12 @@ def createDesiredVector(elementsRequestedInput, filename):
     print 'all data extracted in:',strtimedelta(t1,t2)
 
     # Create a normalized vector of the data
-    #all_desired_data_normalized = createNormalizedVector()
-    #print "Data normalized"
+    all_desired_data_normalized = createNormalizedVector()
+    print "Data normalized"
 
     # Dump data with cPickle
     createDataDump(filename)
     print "Data dumped!!"
     print '##### End of Extration #####'
+
+    return all_desired_data, all_desired_data_normalized

@@ -4,14 +4,36 @@
 	<div>
 		<form action="confirmQuery" method="get">
 			<fieldset>
-				<label>Enter the filename of the output</label>
+				<label><strong>Enter the filename base of the output</strong></label>
 				<input type="text" name="filename" placeholder="Filename">
-				<label>Choose the elements in your vector</label>
+				<br><br>
+				<label><strong>Choose the elements in your vector</strong></label>
 				{% for row in rows %}
 					<label class="checkbox">
-					<input type="checkbox" name=fields value={{row['function']}}>{{row['description']}}<br>
+					<input type="checkbox" name=fields value={{row['function']}}>{{row['description']}}</br>
 					</label>
 				{% endfor %}
+				<br>
+				<div>
+					<label><strong>How should we handle the numpy arrays?</strong></label>
+					<p class="text-warning"><strong>Not implemented yet</strong></p>
+					<label class="radio">
+						<input type="radio" name=method value='mean' CHECKED>
+						Mean
+					</label>
+					<label class="radio">
+						<input type="radio" name=method value='homogenize'>
+						Homogenize the size
+					</label>
+					<label class="radio">
+						<input type="radio" name=method value='truncate'>
+						Truncate the largest
+					</label>
+					<label class="radio">
+						<input type="radio" name=method value='extend'>
+						Extend the smallest
+					</label>
+				</div>
 				<button type="submit" class="btn">Submit</button>
 			</fieldset>
 		</form>
