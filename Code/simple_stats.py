@@ -22,6 +22,7 @@ import matplotlib.pyplot as pyplot
 # path_to_DB = ('/home/octave/workspace/Py_ML_Adlen/MillionSongSubset/\
 # AdditionalFiles')
 path_to_DB = ('../MillionSongSubset/AdditionalFiles')
+#path_to_DB = ('/Users/nicolas/Documents/2012-2013/APA/MillionSongSubset/AdditionalFiles')
 #==============================================================================
 # Checking path & defining a useful function
 print(

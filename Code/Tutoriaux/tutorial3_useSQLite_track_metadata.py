@@ -55,6 +55,7 @@ def encode_string(s):
 # IT SHOULD BE IN THE ADDITIONAL FILES
 # (you can use 'subset_track_metadata.db')
 dbfile = '../../MillionSongSubset/AdditionalFiles/track_metadata.db'
+#dbfile='/Users/nicolas/Documents/2012-2013/APA/MillionSongSubset/AdditionalFiles/subset_artist_term.db'
 
 # connect to the SQLite database
 conn = sqlite3.connect(dbfile)
