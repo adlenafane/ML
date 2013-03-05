@@ -82,5 +82,4 @@ def confirmQuery():
         filename = filename,
         elementsRequested = elementsRequested,
         rawSamples = all_desired_data[:10],
-        normSamples = all_desired_data_normalized[:10],
-        computationEnded = True)
+        normSamples = all_desired_data_normalized[:10])

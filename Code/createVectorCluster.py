@@ -110,8 +110,10 @@ def func_to_get_desired_values(filename, count):
                 pass
         record.append(result)
 
+    song_id = GETTERS.get_song_id(h5)
+
     # Add the record to the data
-    all_desired_data.append(record)
+    all_desired_data.append([song_id, record])
     h5.close()
 
 def createNormalizedVector():
@@ -123,15 +125,20 @@ def createNormalizedVector():
     global all_desired_data_normalized
 
     # Let's normalize these data to have more similar values
-    min_array = [0]*len(all_desired_data[0])
-    max_array = [0]*len(all_desired_data[0])
-    range_array = [0]*len(all_desired_data[0])
+    record_example = all_desired_data[0][1]
+    min_array = [0]*len(record_example)
+    max_array = [0]*len(record_example)
+    range_array = [0]*len(record_example)
 
-    for i in range(len(all_desired_data[0])):
-        min_array[i] = all_desired_data[0][i]
-        max_array[i] = all_desired_data[0][i]
+    # Initialize the the min and max array
+    for i in range(len(record_example)):
+        record_example = all_desired_data[0][1]
+        min_array[i] = record_example[i]
+        max_array[i] = record_example[i]
 
-    for record in all_desired_data:
+    # all_desired_data is composed of couple [song_id, features asked]
+    for couple in all_desired_data:
+        record = couple[1]
         for i in range(len(min_array)):
             try:
                 if record[i] < min_array[i]:
@@ -147,7 +154,8 @@ def createNormalizedVector():
         except:
             pass
 
-    for record in all_desired_data:
+    for couple in all_desired_data:
+        record = couple[1]
         temp_record = []
         for i in range(len(min_array)):
             try:
@@ -158,7 +166,7 @@ def createNormalizedVector():
                     pass
             except:
                 temp_record.append(record[i])
-        all_desired_data_normalized.append(temp_record)
+        all_desired_data_normalized.append([couple[0], temp_record])
     return all_desired_data_normalized
 
 def createDataDump(filename):

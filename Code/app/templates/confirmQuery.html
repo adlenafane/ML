@@ -6,15 +6,12 @@
 		<span><strong>Filename:</strong> {{filename}}</span></br>
 		<span><strong>Elements:</strong> {{elementsRequested}}</span></br>
 	</div>
-	{% if not computationEnded %}
-	<div><strong>Computation in progress</strong></div>
-	{% else %}
-	<p class='text-success'><strong>Computation Ended !</strong></p>
-	{% endif %}
+	<p class="text-error"><strong>The samples below may not reflect the actual computation made but old request, this is a known issue</strong></p>
 	<p class="text-info"><strong>Sample of the raw output</strong></p>
 	<table class="table table-hover">
 		<thead>
 			<tr>
+				<th>Song ID</th>
 				{% for element in elementsRequested %}
 				<th>{{element}}</th>
 				{% endfor %}
@@ -23,7 +20,8 @@
 		<tbody>
 			{% for sample in rawSamples %}
 				<tr>
-					{% for sampleElement in sample %}
+					<td>{{sample[0]}}</td>
+					{% for sampleElement in sample[1] %}
 						<td>{{sampleElement}}</td>
 					{% endfor %}
 				</tr>
@@ -34,6 +32,7 @@
 	<table class="table table-hover">
 		<thead>
 			<tr>
+				<th>Song ID</th>
 				{% for element in elementsRequested %}
 				<th>{{element}}</th>
 				{% endfor %}
@@ -42,7 +41,8 @@
 		<tbody>
 			{% for sample in normSamples %}
 				<tr>
-					{% for sampleElement in sample %}
+					<td>{{sample[0]}}</td>
+					{% for sampleElement in sample[1] %}
 						<td>{{sampleElement}}</td>
 					{% endfor %}
 				</tr>
