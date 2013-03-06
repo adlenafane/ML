@@ -70,7 +70,7 @@ def apply_to_all_files(basedir, func=lambda x: x,ext='.h5'):
     return cnt
 
 # we define the function to apply to al_l files
-def func_to_get_desired_values(filename):
+def func_to_get_desired_values(filename, returnValue = False):
     """
     This function does 3 simple things:
     - open the song file
@@ -114,8 +114,13 @@ def func_to_get_desired_values(filename):
     song_id = unicode(song_id.decode('utf-8'))
     title = unicode(title.decode('utf-8'))
     artist_name = unicode(artist_name.decode('utf-8'))
-    all_desired_data.append([[[song_id, title, artist_name, elementsRequested], artist_name, title, artist_mbtags, release], record])
+    if not returnValue:
+        all_desired_data.append([[[song_id, title, artist_name, elementsRequested], artist_name, title, artist_mbtags, release], record])
+    
     h5.close()
+    
+    if returnValue:
+        return [[[song_id, title, artist_name, elementsRequested], artist_name, title, artist_mbtags, release], record]
 
 def createNormalizedVector():
     '''
@@ -220,6 +225,9 @@ def createDataDump(filename):
                 if j == 0 or j == '' or j == '0':
                     dataOk = False
                     break
+                if np.isnan(j):
+                    dataOk = False
+                    break
             if dataOk:
                 extract.append(all_desired_data_normalized[i])
         cPickle.dump(extract, f)
@@ -265,23 +273,37 @@ def createDesiredVector(elementsRequestedInput, filename):
 
     return all_desired_data, all_desired_data_normalized
 
-def findBestCluster(cluster_path, res_json):
-    result = []
+def findBestCluster(cluster_path):
+    global elementsRequested
+
+    print "cluster_path", cluster_path
     with open(cluster_path, 'rb') as f:
         X = cPickle.load(f)
         clusterList = X[0]
         barycentersList = X[1]
         infosList = X[2]
-    featuresInCluster = clusterList[0][0][3]
+    elementsRequested = clusterList[0][0][3]
     song_vector = []
-    for feature in featuresInCluster:
-        print feature[4:]
-        if feature[4:] in ("num_samples", "duration", "sample_md5", "decoder", "offset_seconds", \
-            "window_seconds", "analysis_sample_rate", "analysis_channels", "end_of_fade_in", "start_of_fade_out",\
-            "loudness", "tempo", "tempo_confidence", "time_signature", "time_signature_confidence", "key", "key_confidence", "mode", "mode_confidence") :
-            song_vector.append(res_json['track'][feature[4:]])
-            print res_json['track'][feature[4:]]
-        else:
-            song_vector.append(res_json[feature[4:]])
-            print res_json[feature[4:]]
-    return featuresInCluster
+    # for feature in featuresInCluster:
+    #     print feature[4:]
+    #     if feature[4:] in ("num_samples", "duration", "sample_md5", "decoder", "offset_seconds", \
+    #         "window_seconds", "analysis_sample_rate", "analysis_channels", "end_of_fade_in", "start_of_fade_out",\
+    #         "loudness", "tempo", "tempo_confidence", "time_signature", "time_signature_confidence", "key", "key_confidence", "mode", "mode_confidence") :
+    #         song_vector.append(res_json['track'][feature[4:]])
+    #         print res_json['track'][feature[4:]]
+    #     else:
+    #         song_vector.append(res_json[feature[4:]])
+    #         print res_json[feature[4:]]
+    song_path = msd_subset_data_path + '/B/I/J/TRBIJYB128F14AE326.h5'
+    song_vector = func_to_get_desired_values(song_path, True)
+    song_record = np.array(song_vector[1])
+    scalar_product = np.zeros([len(barycentersList)])
+    print scalar_product
+    index = 0
+    for center in barycentersList:
+        print index
+        print np.dot(center, song_record)
+        scalar_product[index] = np.dot(center, song_record)
+        index+=1
+    closestCenter = np.argmin(scalar_product)
+    return closestCenter
