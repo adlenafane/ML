@@ -10,7 +10,7 @@ from sklearn.preprocessing import scale
 
 """
 TODO
-Clean print inside functions
+Clean prints inside functions
 """
 def numberOfInfos(rawData):
 	#Recupere le nombre de categories d infos disponibles pour decrire le dataset
@@ -30,8 +30,6 @@ def applyKmean(data,nbOfClusters,ninit=10):
 	#Applique le Kmean
 	clustereddata=kmeans.fit(data)
 	clusteredlabels= clustereddata.labels_
-	print "######Clustered labels"
-	print clusteredlabels
 	barycenters=kmeans.cluster_centers_
 	#Type de barycenters est numpy.ndarray
 
@@ -48,9 +46,6 @@ def getInfo(Kmeanresults,rawData,infoNb):
 		clusterInfo={}
 		for indice in cluster:
 			featureRawData=rawData[indice][0][infoNb]
-			print "### Mbtags print"
-			print featureRawData
-			print 50*"_"
 			#Test pour Mbtags
 			if isinstance(featureRawData,np.ndarray):
 				for mbtag in featureRawData:
@@ -97,6 +92,13 @@ def kmeanTreatment(dataPath,nbOfClusters):
 
 	return clusterList, barycentersList, infosList
 
+def findIntegrityErrorsInData(rawData):
+	pbs=[]
+	for elementList in rawData:
+		for flo in elementList[1]:
+			if type(flo)!=float:
+				pbs.append([type(flo),flo,elementList[1],elementList[0]])
+	return pbs
 """
 print "### TESTS: ###"
 #data=[[["a"],[0,0]],[["b"],[0,1]],[["c"],[10,0]],[["c"],[10,1]]]
@@ -124,6 +126,7 @@ print "Cluster Mbtags: "
 print getInfo(kres[0],data,3)
 """
 print 50*"_"
-print "Kmean kmeanTreatment: "
+print "kmeanTreatment: "
 #print kmeanTreatment('/Users/nicolas/Documents/2012-2013/APA/Tests Algos/normOutputCleanNicoTestKMeans2.txt',4)
-print kmeanTreatment('/Users/nicolas/Documents/2012-2013/APA/Tests Algos/normOutputCleanNicoKmeans4.txt',4)
+#print kmeanTreatment('/Users/nicolas/Documents/2012-2013/APA/Tests Algos/normOutputCleanNicoTestKMeans5.txt',4)
+print kmeanTreatment('/Users/nicolas/Documents/2012-2013/APA/Tests Algos/normOutputCleanTest.txt',4)
