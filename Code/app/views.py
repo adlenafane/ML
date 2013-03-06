@@ -1,6 +1,7 @@
 from flask import render_template, request
 from app import app
 from createVectorCluster import createDesiredVector
+from checkDump import checkDump
 from pyechonest import config
 from pyechonest import song
 config.ECHO_NEST_API_KEY = "JKVBCIDFBTBNKAVH0"
@@ -113,6 +114,9 @@ def getClustersResult():
     data_path = './dump/' + data_name
     method = request.args.get('method', '')
     # Use the method send to clusterize the data
+    check = checkDump(data_path)
     return render_template('clusteringresult.html', 
         datapath = data_path,
-        method = method)
+        method = method,
+        size = len(check),
+        check = check)
