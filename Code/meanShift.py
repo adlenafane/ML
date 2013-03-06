@@ -34,6 +34,9 @@ def applyMeanShift(data,quantileValue=0.2,clusterall=False):
 		print "###Indices des points du cluster %d : ###" %i
 		print [indice[0] for indice in np.argwhere(clusteredlabels == i)]
 		result.append([indice[0] for indice in np.argwhere(clusteredlabels == i)])
+	#Add a zero coordinates vector to takeinto account the fact that -1 "cluster" does not have a barycenter
+	if -1 in labels_unique:
+		barycenters= np.append([[0 for k in range(len(barycenters[0]))]],barycenters,axis=0)
 
 	return [result,barycenters]
 
@@ -57,6 +60,7 @@ def meanShiftTreatment(dataPath):
 		for infoNb in range(1,nbOfInfos):
 			infosList.append(getInfo(meanShiftOutput[0],data,infoNb))
 
+	pprint.pprint(barycentersList)
 	return clusterList, barycentersList, infosList
 
 #TESTS
@@ -80,5 +84,5 @@ print applyMeanShift(dataToCluster)
 print 50*"_"
 print "meanShiftTreatment: "
 print meanShiftTreatment('/Users/nicolas/Documents/2012-2013/APA/Tests Algos/normOutputCleanTest.txt')
-print meanShiftTreatment('/Users/nicolas/Documents/2012-2013/APA/Tests Algos/normOutputCleanNicoKmeans4.txt')
 """
+print meanShiftTreatment('/Users/nicolas/Documents/2012-2013/APA/Tests Algos/normOutputCleanNicoKmeans4.txt')
