@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     Script to import and transform data from the MillionSongSubset
 
@@ -37,7 +38,7 @@ def strtimedelta(starttime,stoptime):
     return str(datetime.timedelta(seconds=stoptime-starttime))
 
 # we define this very useful function to iterate the files
-def apply_to_all_files(basedir, func=lambda x, y: x,ext='.h5'):
+def apply_to_all_files(basedir, func=lambda x: x,ext='.h5'):
     """
     From a base directory, go through all subdirectories,
     find all files with the given extension, apply the
@@ -59,21 +60,17 @@ def apply_to_all_files(basedir, func=lambda x, y: x,ext='.h5'):
         cnt += len(files)
         # apply function to all files
         for f in files :
-            if count < 100:
-                func(f, count)
+            if count < 1500:
+                func(f)
             else:
                 break
             count+=1
-        if count >= 100:
+        if count >= 1500:
             break
     return cnt
 
-
-
-match_songId_row = {}
-
 # we define the function to apply to al_l files
-def func_to_get_desired_values(filename, count):
+def func_to_get_desired_values(filename):
     """
     This function does 3 simple things:
     - open the song file
@@ -81,14 +78,10 @@ def func_to_get_desired_values(filename, count):
     - close the file
     INPUT : 
     filename    - The name of the h5 file to be loaded
-    count       - The value of the current row to be loaded
     """
     global all_desired_data
     # Open file
     h5 = GETTERS.open_h5_file_read(filename)
-
-    # Add to the dictionnary the correspondance between row and song_id
-    match_songId_row[count] = GETTERS.get_song_id(h5)
 
     # Create and fill a record
     record = []
@@ -100,8 +93,11 @@ def func_to_get_desired_values(filename, count):
         except:
             pass
         try:
-            if len(result) > 1:
-                result = float(np.mean(result))
+            if isinstance(result, np.ndarray):
+                if len(result) > 1:
+                    result = float(np.mean(result))
+                else:
+                    result = ''
         except:
             try:
                 result = float(result)
@@ -115,8 +111,10 @@ def func_to_get_desired_values(filename, count):
     artist_mbtags = GETTERS.get_artist_mbtags(h5)
     release = GETTERS.get_release(h5)
 
-    # Add the record to the data
-    all_desired_data.append([[song_id, artist_name, title, artist_mbtags, release], record])
+    song_id = unicode(song_id.decode('utf-8'))
+    title = unicode(title.decode('utf-8'))
+    artist_name = unicode(artist_name.decode('utf-8'))
+    all_desired_data.append([[[song_id, title, artist_name, elementsRequested], artist_name, title, artist_mbtags, release], record])
     h5.close()
 
 def createNormalizedVector():
@@ -216,10 +214,8 @@ def createDataDump(filename):
     with open(dump_path + 'normOutputClean' + filename + '.txt', 'wb') as f:
         extract = []
         for i in range(len(all_desired_data_normalized)):
-            print all_desired_data_normalized[i][1]
             dataOk = True
             for j in all_desired_data_normalized[i][1]:
-                print j
                 # We assume that 0, '' and so on mean not analyzed so we do not keep it
                 if j == 0 or j == '' or j == '0':
                     dataOk = False
@@ -268,3 +264,24 @@ def createDesiredVector(elementsRequestedInput, filename):
     print '##### End of Extration #####'
 
     return all_desired_data, all_desired_data_normalized
+
+def findBestCluster(cluster_path, res_json):
+    result = []
+    with open(cluster_path, 'rb') as f:
+        X = cPickle.load(f)
+        clusterList = X[0]
+        barycentersList = X[1]
+        infosList = X[2]
+    featuresInCluster = clusterList[0][0][3]
+    song_vector = []
+    for feature in featuresInCluster:
+        print feature[4:]
+        if feature[4:] in ("num_samples", "duration", "sample_md5", "decoder", "offset_seconds", \
+            "window_seconds", "analysis_sample_rate", "analysis_channels", "end_of_fade_in", "start_of_fade_out",\
+            "loudness", "tempo", "tempo_confidence", "time_signature", "time_signature_confidence", "key", "key_confidence", "mode", "mode_confidence") :
+            song_vector.append(res_json['track'][feature[4:]])
+            print res_json['track'][feature[4:]]
+        else:
+            song_vector.append(res_json[feature[4:]])
+            print res_json[feature[4:]]
+    return featuresInCluster
