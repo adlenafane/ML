@@ -16,6 +16,7 @@ from sklearn import preprocessing
 
 # path to the Million Song Dataset subset (uncompressed)
 msd_subset_path='../MillionSongSubset'
+#msd_subset_path='/Users/nicolas/Documents/2012-2013/APA/MillionSongSubset'
 msd_subset_data_path=os.path.join(msd_subset_path,'data')
 msd_subset_addf_path=os.path.join(msd_subset_path,'AdditionalFiles')
 assert os.path.isdir(msd_subset_path),'wrong path' # sanity check
