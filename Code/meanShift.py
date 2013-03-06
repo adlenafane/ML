@@ -13,13 +13,13 @@ def prepareData(rawData):
 		result.append(elementList[1])
 	return np.asarray(result)
 
-def applyMeanShift(data):
+def applyMeanShift(data,quantileValue=0.2,clusterall=False):
 	result=[]
 	n_samples=len(data)
 	print "Nombre de points du dataset: %d" %n_samples
 	
-	bandwidth = estimate_bandwidth(data, quantile=0.2)
-	ms = MeanShift(bandwidth=bandwidth,cluster_all=False)
+	bandwidth = estimate_bandwidth(data, quantile=quantileValue)
+	ms = MeanShift(bandwidth=bandwidth,cluster_all=clusterall)
 	#Applique le MeanShift
 	clustereddata=ms.fit(data)
 	clusteredlabels= clustereddata.labels_
@@ -27,7 +27,6 @@ def applyMeanShift(data):
 
 	labels_unique = np.unique(clusteredlabels)
 	nbOfClusters = len(labels_unique)
-	print labels_unique
 
 	print "number of estimated clusters : %d" % nbOfClusters
 
@@ -81,5 +80,5 @@ print applyMeanShift(dataToCluster)
 print 50*"_"
 print "meanShiftTreatment: "
 print meanShiftTreatment('/Users/nicolas/Documents/2012-2013/APA/Tests Algos/normOutputCleanTest.txt')
+print meanShiftTreatment('/Users/nicolas/Documents/2012-2013/APA/Tests Algos/normOutputCleanNicoKmeans4.txt')
 """
-#print meanShiftTreatment('/Users/nicolas/Documents/2012-2013/APA/Tests Algos/normOutputCleanNicoKmeans4.txt')
