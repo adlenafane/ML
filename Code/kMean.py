@@ -1,6 +1,7 @@
 import numpy as np
 import cPickle,pprint
 from sklearn.cluster import KMeans
+from clustering import *
 
 """
 TODO
@@ -33,36 +34,6 @@ def applyKmean(data,nbOfClusters,ninit=10):
 		result.append([indice[0] for indice in np.argwhere(clusteredlabels == i)])
 
 	return [result,barycenters]
-
-def getInfo(Kmeanresults,rawData,infoNb):
-	result=[]
-	for cluster in Kmeanresults:
-		clusterInfo={}
-		for indice in cluster:
-			featureRawData=rawData[indice][0][infoNb]
-			#Test pour Mbtags
-			if isinstance(featureRawData,np.ndarray):
-				for mbtag in featureRawData:
-					if mbtag not in clusterInfo:
-						clusterInfo[mbtag]=1
-					else:
-						clusterInfo[mbtag]+=1
-			else:
-				if featureRawData not in clusterInfo:
-					clusterInfo[featureRawData]=1
-				else:
-					clusterInfo[featureRawData]+=1
-		result.append(clusterInfo)
-	return result
-
-def songIdsClustersList(clustersResult,rawData):
-	result=[]
-	for cluster in clustersResult:
-		clusterList=[]
-		for indice in cluster:
-			clusterList.append(rawData[indice][0][0])
-		result.append(clusterList)
-	return result
 
 def kmeanTreatment(dataPath,nbOfClusters):
 	with open(dataPath, 'rb') as f:
@@ -119,8 +90,10 @@ print getInfo(kres[0],data,2)
 print "Cluster Mbtags: "
 print getInfo(kres[0],data,3)
 """
+"""
 print 50*"_"
 print "kmeanTreatment: "
 #print kmeanTreatment('/Users/nicolas/Documents/2012-2013/APA/Tests Algos/normOutputCleanNicoTestKMeans2.txt',4)
 #print kmeanTreatment('/Users/nicolas/Documents/2012-2013/APA/Tests Algos/normOutputCleanNicoTestKMeans5.txt',4)
-print kmeanTreatment('/Users/nicolas/Documents/2012-2013/APA/Tests Algos/normOutputCleanTest.txt',4)
+print kmeanTreatment('/Users/nicolas/Documents/2012-2013/APA/Tests Algos/normOutputCleanTest.txt',11)
+"""
