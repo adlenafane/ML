@@ -1,5 +1,6 @@
 import numpy as np
-import cPickle,pprint
+import cPickle
+#import pprint
 from sklearn.cluster import KMeans
 from clustering import *
 
