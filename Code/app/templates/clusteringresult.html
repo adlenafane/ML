@@ -2,9 +2,83 @@
 {% block content %}
 	<h1>Clustering result</h1>
 	<div>
-		<p>Data path: {{datapath}}</p>
-		<p>Method requested: {{method}}</p>
-		<p>Dump Size: {{size}}</p>
-		<p>Dump: {{check}}</p>
+		<p><strong>Data path:</strong> {{datapath}}</p>
+		<p><strong>Method requested:</strong> {{method}}</p>
+		{% for i in clusterNumber %}
+			<h3>Cluster {{i}}</h3>
+			<p><strong>Center Coordinates:</strong></p> 
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						{% for feature in  clusterList[0][0][3]%}
+							<th>
+								{{feature}}
+							</th>
+						{% endfor %}
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						{% for coordinate in barycentersList[i]%}
+						<td>
+							{{coordinate}}
+						</td>
+						{% endfor %}
+					</tr>
+				</tbody>
+			</table>
+			<br>
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						<th>Song ID</th>
+						<th>Title</th>
+						<th>Artist name</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for songinfo in clusterList[i] %}
+						<tr>
+							<td>{{songinfo[0]}}</td>
+							<td>{{songinfo[1]}}</td>
+							<td>{{songinfo[2]}}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			<p>Artists: {{infosList[0][i]}}</p>
+			<p>Titles: {{infosList[1][i]}}</p>
+			<p>Artists mbtags: {{infosList[2][i]}}</p>
+			<p>Release: {{infosList[3][i]}}</p>
+		{%  endfor %}
+		<h3>Centers comparison</h3>
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th>
+						#
+					</th>
+					{% for feature in  clusterList[0][0][3]%}
+						<th>
+							{{feature}}
+						</th>
+					{% endfor %}
+				</tr>
+			</thead>
+			<tbody>
+				{% for i in clusterNumber %}
+					<tr>
+						<td>
+							Cluster {{i}}
+						</td>
+						{% for coordinate in barycentersList[i]%}
+						<td>
+							{{coordinate}}
+						</td>
+						{% endfor %}
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
 	</div>
 {% endblock %}

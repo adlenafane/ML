@@ -1,9 +1,13 @@
+# -*- coding: utf-8 -*-
 from flask import render_template, request
 from app import app
 from createVectorCluster import createDesiredVector
-from checkDump import checkDump
+from createVectorCluster import findBestCluster
+from kMean import kmeanTreatment
 from pyechonest import config
 from pyechonest import song
+import requests
+import cPickle
 config.ECHO_NEST_API_KEY = "JKVBCIDFBTBNKAVH0"
 
 @app.route('/')
@@ -33,10 +37,10 @@ def index():
         #{"function": 'get_artist_terms_weight', "description": "ARRAY FLOAT - artist terms weight"},\
         {"function": 'get_analysis_sample_rate', "description": "FLOAT - analysis sample rate"},\
         {"function": 'get_audio_md5', "description": "STRING - audio md5"},\
-        {"function": 'get_danceability', "description": "FLOAT - danceability"},\
+        {"function": 'get_danceability', "description": "****** FLOAT - danceability ******"},\
         {"function": 'get_duration', "description": "FLOAT - duration"},\
         {"function": 'get_end_of_fade_in', "description": "FLOAT - end of fade in"},\
-        {"function": 'get_energy', "description": "FLOAT - energy"},\
+        {"function": 'get_energy', "description": "***** FLOAT - energy ******"},\
         {"function": 'get_key', "description": "INT - key"},\
         {"function": 'get_key_confidence', "description": "FLOAT - key confidence"},\
         {"function": 'get_loudness', "description": "FLOAT - loudness"},\
@@ -88,18 +92,6 @@ def confirmQuery():
         rawSamples = all_desired_data[:10],
         normSamples = all_desired_data_normalized[:10])
 
-@app.route('/trackSearch')
-def handleTrack():
-    track = request.args.get('song', '')
-    artist = request.args.get('artist', '')
-    if track == '' or artist == '':
-        return render_template('tracksearch.html',
-            searchOk = False)
-    else:
-        return render_template('tracksearch.html',
-            searchOk = True,
-            result = song.search(artist = artist, title = track)[0])
-
 @app.route('/chooseClustering')
 def chooseClustering():
     data_name = request.args.get('dataname', '')
@@ -113,10 +105,54 @@ def getClustersResult():
         data_name = 'normOutputCleanTest.txt'
     data_path = './dump/' + data_name
     method = request.args.get('method', '')
+
     # Use the method send to clusterize the data
-    check = checkDump(data_path)
+    if method == 'kmean':
+        clusterList, barycentersList, infosList = kmeanTreatment(data_path, 4)
+    else:
+        clusterList, barycentersList, infosList = kmeanTreatment(data_path, 4)
+
+    # Make a dump of the results!
+    with open('./cluster/' + method + data_name, 'wb') as f:
+        cPickle.dump([clusterList, barycentersList, infosList], f)
+
     return render_template('clusteringresult.html', 
         datapath = data_path,
         method = method,
-        size = len(check),
-        check = check)
+        clusterNumber = range(len(clusterList)),
+        clusterList = clusterList,
+        barycentersList = barycentersList,
+        infosList = infosList)
+
+@app.route('/trackSearch')
+def findTrack():
+    track = request.args.get('song', '')
+    artist = request.args.get('artist', '')
+    if track == '' or artist == '':
+        return render_template('tracksearch.html',
+            searchOk = False)
+    else:
+        # Find the requested song with echonest API
+        result = song.search(artist = artist, title = track)[0]
+
+        return render_template('tracksearch.html',
+            searchOk = True,
+            result = result)
+
+@app.route('/similarSong')
+def findSimilarSong():
+    path = './cluster/'
+    track = request.args.get('song', '')
+    artist = request.args.get('artist', '')
+    url = request.args.get('url', '')
+    clusterfile = request.args.get('clusters', '')
+    if clusterfile == '':
+        ''' Define a default value !!'''
+        pass
+    cluster_path = path + clusterfile
+    result = song.search(artist = artist, title = track)[0]
+    res = requests.get(url)
+    res_json = res.json()
+    a = findBestCluster(cluster_path, res_json)
+    return render_template('similarsong.html', 
+        result = a)

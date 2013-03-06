@@ -1,19 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
-	<h1>Find a song</h1>
 	<div>
-		<form action="trackSearch" method="get">
-			<fieldset>
-				<label><strong>Enter the song you are looking for</strong></label>
-				<input type="search" name="song" placeholder="Song">
-				<label><strong>Enter the artist you are looking for</strong></label>
-				<input type="search" name="artist" placeholder="Artist">
-				<br>
-				<button type="submit" class="btn">Submit</button>
-			</fieldset>
-			<br>
-		</form>
 		{% if searchOk %}
+			<h3>Gotcha!</h3>
+			<form action="similarSong" method="get">
+				<fieldset>
+					<label><strong>Title</strong></label>
+					<input type="search" class="uneditable-input" name="song" value={{result.title}}>
+					<label><strong>Artist</strong></label>
+					<input type="search" class="uneditable-input" name="artist" value={{result.artist_name}}>
+					<label><strong>Data URL</strong></label>
+					<input type="search" class="uneditable-input" name="url" value={{result.audio_summary['analysis_url']}}>
+					<label><strong>Select Base Clusters</strong></label>
+					<input type="search" name="clusters" placeholder="Name of the dump">
+					<p class="text-info">File must be in the cluster folder and must be a cPickle dump, do not forget the extension!</p>
+					<br>
+					<button type="submit" class="btn btn-primary">Find similar songs!</button>
+				</fieldset>
+				<br>
+			</form>
 			<h3><strong>Search Result</strong></h3>
 			<p>Song ID: {{result.id}}</p>
 			<p>Title: {{result.title}}</p>
@@ -21,15 +26,21 @@
 			<p>Artist ID: {{result.artist_id}}</p>
 			<p>Location: {{result.artist_location}}</p>
 			<p>Song Audio summary: {{result.audio_summary}}</p>
-			<form action="similarSong" method="get">
-				<fieldset>
-					<label><strong>Song ID</strong></label>
-					<div class="input-append">
-						<input type="search" name="songid" value={{result.id}}>
-						<button type="submit" class="btn btn-primary">Find similar songs!</button>
-					</div>
-				</fieldset>
-			</form>
+		<h3>Looking for something else?</h3>
+		{% else %}
+		<h3>Find a song!</h3>
 		{% endif %}
+		<form action="trackSearch" method="get">
+			<fieldset>
+				<label><strong>Enter the song you are looking for</strong></label>
+				<input type="search" name="song" placeholder="Song">
+				<label><strong>Enter the artist you are looking for</strong></label>
+				<input type="search" name="artist" placeholder="Artist">
+				<br>
+				<button type="submit" class="btn btn-primary">Submit</button>
+			</fieldset>
+			<br>
+		</form>
+
 	</div>
 {% endblock %}
