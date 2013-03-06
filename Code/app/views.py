@@ -4,6 +4,7 @@ from app import app
 from createVectorCluster import createDesiredVector
 from createVectorCluster import findBestCluster
 from kMean import kmeanTreatment
+from meanShift import meanShiftTreatment
 from pyechonest import config
 from pyechonest import song
 import requests
@@ -109,6 +110,8 @@ def getClustersResult():
     # Use the method send to clusterize the data
     if method == 'kmean':
         clusterList, barycentersList, infosList = kmeanTreatment(data_path, 4)
+    elif method == 'meanshift':
+        clusterList, barycentersList, infosList = meanShiftTreatment(data_path)
     else:
         clusterList, barycentersList, infosList = kmeanTreatment(data_path, 4)
 
@@ -148,11 +151,12 @@ def findSimilarSong():
     clusterfile = request.args.get('clusters', '')
     if clusterfile == '':
         ''' Define a default value !!'''
+        clusterfile = 'kmeannormOutputCleanAdlen.txt'
         pass
     cluster_path = path + clusterfile
-    result = song.search(artist = artist, title = track)[0]
-    res = requests.get(url)
-    res_json = res.json()
-    a = findBestCluster(cluster_path, res_json)
+    # result = song.search(artist = artist, title = track)[0]
+    # res = requests.get(url)
+    # res_json = res.json()
+    a = findBestCluster(cluster_path)
     return render_template('similarsong.html', 
-        result = a)
+        result = a) 
