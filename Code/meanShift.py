@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.cluster import MeanShift, estimate_bandwidth
-import cPickle,pprint
+import cPickle
+#import pprint
 from clustering import *
 
 def numberOfInfos(rawData):
@@ -32,7 +33,7 @@ def applyMeanShift(data,quantileValue=0.2,clusterall=False):
 
 	for i in labels_unique:
 		print "###Indices des points du cluster %d : ###" %i
-		print [indice[0] for indice in np.argwhere(clusteredlabels == i)]
+		# print [indice[0] for indice in np.argwhere(clusteredlabels == i)]
 		result.append([indice[0] for indice in np.argwhere(clusteredlabels == i)])
 	#Add a zero coordinates vector to takeinto account the fact that -1 "cluster" does not have a barycenter
 	if -1 in labels_unique:
