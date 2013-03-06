@@ -1,6 +1,9 @@
 from flask import render_template, request
 from app import app
 from createVectorCluster import createDesiredVector
+from pyechonest import config
+from pyechonest import song
+config.ECHO_NEST_API_KEY = "JKVBCIDFBTBNKAVH0"
 
 @app.route('/')
 @app.route('/index')
@@ -9,24 +12,24 @@ def index():
     [\
         {"function": 'get_artist_familiarity', "description": "FLOAT - artist familiarity"},\
         {"function": 'get_artist_hotttnesss', "description": "FLOAT - artist hotttnesss"},\
-        {"function": 'get_artist_id', "description": "STRING - artist id"},\
-        {"function": 'get_artist_mbid', "description": "STRING - artist mbid"},\
-        {"function": 'get_artist_playmeid', "description": "INT - artist playmeid"},\
-        {"function": 'get_artist_7digitalid', "description": "INT - artist 7digitalid"},\
+        #{"function": 'get_artist_id', "description": "STRING - artist id"},\
+        #{"function": 'get_artist_mbid', "description": "STRING - artist mbid"},\
+        #{"function": 'get_artist_playmeid', "description": "INT - artist playmeid"},\
+        #{"function": 'get_artist_7digitalid', "description": "INT - artist 7digitalid"},\
         {"function": 'get_artist_latitude', "description": "FLOAT - artist latitude"},\
         {"function": 'get_artist_longitude', "description": "FLOAT - artist longitude"},\
         {"function": 'get_artist_location', "description": "STRING - artist location"},\
         {"function": 'get_artist_name', "description": "STRING - artist name"},\
         {"function": 'get_release', "description": "STRING - release"},\
-        {"function": 'get_release_7digitalid', "description": "INT - release 7digitalid"},\
+        #{"function": 'get_release_7digitalid', "description": "INT - release 7digitalid"},\
         {"function": 'get_song_id', "description": "STRING - song id"},\
         {"function": 'get_song_hotttnesss', "description": "FLOAT - song hotttnesss"},\
         {"function": 'get_title', "description": "STRING - title"},\
-        {"function": 'get_track_7digitalid', "description": "INT - track 7digitalid"},\
-        {"function": 'get_similar_artists', "description": "ARRAY STRING - similar artists"},\
-        {"function": 'get_artist_terms', "description": "ARRAY - STRING - artist terms"},\
-        {"function": 'get_artist_terms_freq', "description": "ARRAY FLOAT - artist terms freq"},\
-        {"function": 'get_artist_terms_weight', "description": "ARRAY FLOAT - artist terms weight"},\
+        #{"function": 'get_track_7digitalid', "description": "INT - track 7digitalid"},\
+        #{"function": 'get_similar_artists', "description": "ARRAY STRING - similar artists"},\
+        #{"function": 'get_artist_terms', "description": "ARRAY - STRING - artist terms"},\
+        #{"function": 'get_artist_terms_freq', "description": "ARRAY FLOAT - artist terms freq"},\
+        #{"function": 'get_artist_terms_weight', "description": "ARRAY FLOAT - artist terms weight"},\
         {"function": 'get_analysis_sample_rate', "description": "FLOAT - analysis sample rate"},\
         {"function": 'get_audio_md5', "description": "STRING - audio md5"},\
         {"function": 'get_danceability', "description": "FLOAT - danceability"},\
@@ -42,7 +45,7 @@ def index():
         {"function": 'get_tempo', "description": "FLOAT - tempo"},\
         {"function": 'get_time_signature', "description": "INT - time signature"},\
         {"function": 'get_time_signature_confidence', "description": "FLOAT - time signature confidence"},\
-        {"function": 'get_track_id', "description": "STRING - track id"},\
+        #{"function": 'get_track_id', "description": "STRING - track id"},\
         {"function": 'get_segments_start', "description": "ARRAY FLOAT - segments start"},\
         {"function": 'get_segments_confidence', "description": "ARRAY FLOAT - segments confidence"},\
         {"function": 'get_segments_pitches', "description": "2D ARRAY FLOAT - segments pitches"},\
@@ -55,11 +58,11 @@ def index():
         {"function": 'get_beats_start', "description": "ARRAY FLOAT - beats start"},\
         {"function": 'get_beats_confidence', "description": "ARRAY FLOAT - beats confidence"},\
         {"function": 'get_bars_start', "description": "ARRAY FLOAT - bars start"},\
-        {"function": 'get_bars_confidence', "description": "ARRAY CONFIDENCE - bars confidence"},\
+        {"function": 'get_bars_confidence', "description": "ARRAY FLOAT - bars confidence"},\
         {"function": 'get_tatums_start', "description": "ARRAY FLOAT - tatums start"},\
         {"function": 'get_tatums_confidence', "description": "ARRAY FLOAT - tatums confidence"},\
-        {"function": 'get_artist_mbtags', "description": "ARRAY STRING - artist mbtags"},\
-        {"function": 'get_artist_mbtags_count', "description": "ARRAY INT - artist mbtags count"},\
+        #{"function": 'get_artist_mbtags', "description": "ARRAY STRING - artist mbtags"},\
+        #{"function": 'get_artist_mbtags_count', "description": "ARRAY INT - artist mbtags count"},\
         {"function": 'get_year', "description": "INT - year"}\
     ]
     return render_template('index.html',
@@ -83,3 +86,33 @@ def confirmQuery():
         elementsRequested = elementsRequested,
         rawSamples = all_desired_data[:10],
         normSamples = all_desired_data_normalized[:10])
+
+@app.route('/trackSearch')
+def handleTrack():
+    track = request.args.get('song', '')
+    artist = request.args.get('artist', '')
+    if track == '' or artist == '':
+        return render_template('tracksearch.html',
+            searchOk = False)
+    else:
+        return render_template('tracksearch.html',
+            searchOk = True,
+            result = song.search(artist = artist, title = track)[0])
+
+@app.route('/chooseClustering')
+def chooseClustering():
+    data_name = request.args.get('dataname', '')
+    return render_template('chooseClustering.html',
+        dataname = data_name)
+
+@app.route('/clusterResult')
+def getClustersResult():
+    data_name = request.args.get('dataname', '')
+    if data_name == '':
+        data_name = 'normOutputCleanTest.txt'
+    data_path = './dump/' + data_name
+    method = request.args.get('method', '')
+    # Use the method send to clusterize the data
+    return render_template('clusteringresult.html', 
+        datapath = data_path,
+        method = method)

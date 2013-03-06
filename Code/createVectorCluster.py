@@ -111,10 +111,11 @@ def func_to_get_desired_values(filename, count):
     song_id = GETTERS.get_song_id(h5)
     artist_name = GETTERS.get_artist_name(h5)
     title = GETTERS.get_title(h5)
-
+    artist_mbtags = GETTERS.get_artist_mbtags(h5)
+    release = GETTERS.get_release(h5)
 
     # Add the record to the data
-    all_desired_data.append([[song_id, artist_name, title], record])
+    all_desired_data.append([[song_id, artist_name, title, artist_mbtags, release], record])
     h5.close()
 
 def createNormalizedVector():

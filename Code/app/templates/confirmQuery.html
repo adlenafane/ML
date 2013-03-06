@@ -3,11 +3,51 @@
 	<h1>Requested Vector</h1>
 	<span>You have requested the following values:</span>
 	<div>
-		<span><strong>Filename:</strong> {{filename}}</span></br>
-		<span><strong>Elements:</strong> {{elementsRequested}}</span></br>
+		<div>
+			<div>
+				<span><strong>Filename:</strong> {{filename}}</span></br>
+				<span><strong>Elements:</strong> {{elementsRequested}}</span></br>
+			</div>
+			<br>
+			<p class="text-info"><strong>Dumps saved :</strong></p>
+			<form action="chooseClustering" method="get">
+				<fieldset>
+					<label><strong>Which data should we use to clusterize?</strong></label>
+					<div>
+						<label class="radio">
+							<input type="radio" name='dataname' value='rawOutput{{filename}}.txt'>
+							rawOutput{{filename}}.txt
+						</label>
+						<label class="radio">
+							<input type="radio" name='dataname' value='rawOutputExtract{{filename}}.txt'>
+							rawOutputExtract{{filename}}.txt
+						</label>
+						<label class="radio">
+							<input type="radio" name='dataname' value='preprocessedOutput{{filename}}.txt'>
+							preprocessedOutput{{filename}}.txt
+						</label>
+						<label class="radio">
+							<input type="radio" name='dataname' value='normOutput{{filename}}.txt'>
+							normOutput{{filename}}.txt
+						</label>
+						<label class="radio">
+							<input type="radio" name='dataname' value='normOutputExtract{{filename}}.txt'>
+							normOutputExtract{{filename}}.txt
+						</label>
+						<label class="radio">
+							<input type="radio" name='dataname' value='normOutputClean{{filename}}.txt' CHECKED>
+							<strong>normOutputClean{{filename}}.txt</strong>
+						</label>
+					</div>
+					<br>
+					<button type="submit" class="btn btn-primary">Clusterize!</button>
+				</fieldset>
+			</form>
+		</div>
+		<p class="text-error"><strong>The samples below may not reflect the actual computation made but old request, this is a known issue</strong></p>
+		<p class="text-info"><strong>Sample of the raw output</strong></p>
+		
 	</div>
-	<p class="text-error"><strong>The samples below may not reflect the actual computation made but old request, this is a known issue</strong></p>
-	<p class="text-info"><strong>Sample of the raw output</strong></p>
 	<table class="table table-hover">
 		<thead>
 			<tr>
@@ -20,7 +60,7 @@
 		<tbody>
 			{% for sample in rawSamples %}
 				<tr>
-					<td>{{sample[0]}}</td>
+					<td>{{sample[0][0]}}</td>
 					{% for sampleElement in sample[1] %}
 						<td>{{sampleElement}}</td>
 					{% endfor %}
@@ -41,7 +81,7 @@
 		<tbody>
 			{% for sample in normSamples %}
 				<tr>
-					<td>{{sample[0]}}</td>
+					<td>{{sample[0][0]}}</td>
 					{% for sampleElement in sample[1] %}
 						<td>{{sampleElement}}</td>
 					{% endfor %}

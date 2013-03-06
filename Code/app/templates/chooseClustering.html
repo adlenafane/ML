@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+	<h1>Choose your clustering</h1>
+	<div>
+		<form action="clusterResult" method="get">
+			<fieldset>
+				<label><strong>Enter the filename base of the data</strong></label>
+				<p class="text-info">File must be in the dump folder and must be a cPickle dump, do not forget the extension!</p>
+				<div class="input-append">
+					<input class="input-xlarge" type="search" name="dataname" placeholder="dataname" value={{dataname}}>
+					<button type="submit" class="btn btn-primary">Clusterize!</button>
+				</div>
+				<br>
+				<div>
+					<label><strong>Which algorithm should we use?</strong></label>
+					<label class="radio">
+						<input type="radio" name=method value='kmeans' CHECKED>
+						KMeans
+					</label>
+					<label class="radio">
+						<input type="radio" name=method value='dbscan'>
+						DBScan
+					</label>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+{% endblock %}
