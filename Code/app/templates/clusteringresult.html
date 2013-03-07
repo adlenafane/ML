@@ -1,9 +1,61 @@
 {% extends "base.html" %}
 {% block content %}
-	<h1>Clustering result</h1>
 	<div>
+		<h1>Clustering result</h1>
 		<p><strong>Data path:</strong> {{datapath}}</p>
 		<p><strong>Method requested:</strong> {{method}}</p>
+	</div>
+	<div>
+		<h2>Results Overview</h2>
+		<h3>Centers comparison</h3>
+		<table class="table table-hover table-condensed">
+			<thead>
+				<tr>
+					<th>
+						#
+					</th>
+					{% for feature in  clusterList[0][0][3]%}
+						<th>
+							{{feature}}
+						</th>
+					{% endfor %}
+				</tr>
+			</thead>
+			<tbody>
+				{% for i in clusterNumber %}
+					<tr>
+						<td>
+							Cluster {{i}}
+						</td>
+						{% for coordinate in barycentersList[i]%}
+						<td>
+							{{coordinate}}
+						</td>
+						{% endfor %}
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		<h3>Mbtags comparison</h3>
+		<table class="table table-hover table-condensed">
+			<tbody>
+				{% for i in clusterNumber %}
+					<tr>
+						<td>
+							Cluster {{i}}
+						</td>
+						{% for value in mbtags_sorted[i][:8] %}
+						<td>
+							{{value}}
+						</td>
+						{% endfor %}
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	<div>
+		<h2>Details of each cluster</h3>
 		{% for i in clusterNumber %}
 			<h3>Cluster {{i}}</h3>
 			<p><strong>Center Coordinates:</strong></p> 
@@ -51,52 +103,6 @@
 			<p>Artists mbtags: {{mbtags_sorted[i]}}</p>
 			<p>Release: {{infosList[3][i]}}</p>
 		{%  endfor %}
-		<h3>Centers comparison</h3>
-		<table class="table table-hover table-condensed">
-			<thead>
-				<tr>
-					<th>
-						#
-					</th>
-					{% for feature in  clusterList[0][0][3]%}
-						<th>
-							{{feature}}
-						</th>
-					{% endfor %}
-				</tr>
-			</thead>
-			<tbody>
-				{% for i in clusterNumber %}
-					<tr>
-						<td>
-							Cluster {{i}}
-						</td>
-						{% for coordinate in barycentersList[i]%}
-						<td>
-							{{coordinate}}
-						</td>
-						{% endfor %}
-					</tr>
-				{% endfor %}
-			</tbody>
-		</table>
-		<h3>Mbtags comparison</h3>
-		<table class="table table-hover table-condensed">
-			<tbody>
-				{% for i in clusterNumber %}
-					<tr>
-						<td>
-							Cluster {{i}}
-						</td>
-						{% for value in mbtags_sorted[i][:8] %}
-						<td>
-							{{value}}
-						</td>
-						{% endfor %}
-					</tr>
-				{% endfor %}
-			</tbody>
-		</table>
 	</div>
 	<script>
 	  var fill = d3.scale.category20();

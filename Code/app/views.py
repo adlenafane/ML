@@ -53,7 +53,7 @@ def index():
         {"function": 'get_tempo', "description": "FLOAT - tempo"},\
         {"function": 'get_time_signature', "description": "INT - time signature"},\
         {"function": 'get_time_signature_confidence', "description": "FLOAT - time signature confidence"},\
-        {"function": 'get_track_id', "description": "STRING - track id"},\
+        {"function": 'get_track_7digitalid', "description": "STRING - track id"},\
         {"function": 'get_segments_start', "description": "ARRAY FLOAT - segments start"},\
         {"function": 'get_segments_confidence', "description": "ARRAY FLOAT - segments confidence"},\
         {"function": 'get_segments_pitches', "description": "2D ARRAY FLOAT - segments pitches"},\
@@ -104,6 +104,7 @@ def chooseClustering():
 @app.route('/clusterResult')
 def getClustersResult():
     data_name = request.args.get('dataname', '')
+    kmean_number = request.args.get('kmeannumber', '')
     if data_name == '':
         data_name = 'normOutputCleanTest.txt'
     data_path = './dump/' + data_name
@@ -111,7 +112,7 @@ def getClustersResult():
 
     # Use the method send to clusterize the data
     if method == 'kmean':
-        clusterList, barycentersList, infosList = kmeanTreatment(data_path, 4)
+        clusterList, barycentersList, infosList = kmeanTreatment(data_path, kmean_number)
     elif method == 'meanshift':
         clusterList, barycentersList, infosList = meanShiftTreatment(data_path)
     else:

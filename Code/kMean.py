@@ -30,8 +30,8 @@ def applyKmean(data,nbOfClusters,ninit=10):
 	#Type de barycenters est numpy.ndarray
 
 	for i in range(nbOfClusters):
-		print "###Indices des points du cluster %d : ###" %i
-		print [indice[0] for indice in np.argwhere(clusteredlabels == i)]
+		#print "###Indices des points du cluster %d : ###" %i
+		#print [indice[0] for indice in np.argwhere(clusteredlabels == i)]
 		result.append([indice[0] for indice in np.argwhere(clusteredlabels == i)])
 
 	return [result,barycenters]

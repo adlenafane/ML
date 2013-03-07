@@ -12,4 +12,4 @@ def checkDump(filename = './dump/normOutputCleanadlen.txt'):
 			print tag
 	return X
 
-checkDump('./dump/rawOutputtrackid.txt')
+checkDump('./dump/normOutputCleanevaluation.txt')
