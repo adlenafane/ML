@@ -21,8 +21,8 @@ import matplotlib.pyplot as pyplot
 # path to the folder 'AdditionalFiles'
 # path_to_DB = ('/home/octave/workspace/Py_ML_Adlen/MillionSongSubset/\
 # AdditionalFiles')
-path_to_DB = ('../MillionSongSubset/AdditionalFiles')
-#path_to_DB = ('/Users/nicolas/Documents/2012-2013/APA/MillionSongSubset/AdditionalFiles')
+#path_to_DB = ('../MillionSongSubset/AdditionalFiles')
+path_to_DB = ('/Users/nicolas/Documents/2012-2013/APA/MillionSongSubset/AdditionalFiles')
 #==============================================================================
 # Checking path & defining a useful function
 print(
@@ -74,6 +74,8 @@ q += ' GROUP BY artist_id'
 t1 = time.time()
 res = conn.execute(q)
 pop_artists = res.fetchall()
+print "Type pop artist"
+print type(pop_artists)
 nb_songs = map(lambda x: x[1], pop_artists) # extracting number of songs only
 
 mean = numpy.mean(nb_songs)

@@ -1,6 +1,7 @@
 import os
 import sqlite3
 import numpy
+import matplotlib.pyplot as pyplot
 
 #==============================================================================
 # TO CONFIGURE
@@ -79,3 +80,51 @@ def getInfosFromSimilarSongsInSubset(entryList):
 	return similarList
 
 #print getInfosFromSimilarSongsInSubset(entryList9)
+
+#-----------------------------------------------------------------------------
+def computeSimilarityStats(similarityDic):
+	#Une liste de similarList
+	result=[]
+	for element in similarityDic:
+		result.append(len(similarityDic[element]))
+	return result
+	
+def computeSimilarityStats(result):
+	mean = numpy.mean(result)
+	std = numpy.std(result)
+	maxNbSimSongs = numpy.max(result)
+	minNbSimSongs = numpy.min(result)
+
+	# Plotting histogram
+	bins = numpy.arange(minNbSimSongs, maxNbSimSongs+2, 1) - 0.5
+	hist = numpy.histogram(result, bins)[0]
+
+	width = 1
+	center = (bins[:-1]+bins[1:])/2
+
+
+	fig = pyplot.figure()
+
+	pyplot.subplot(1,2,1)
+	pyplot.bar(center, hist, align = 'center', width = width)
+
+	pyplot.xlim(minNbSimSongs-1, maxNbSimSongs+1)
+	pyplot.xticks(center, fontsize = 12)
+
+	pyplot.xlabel('Number of songs in the subset', fontsize= 12)
+	pyplot.ylabel('Number of similar songs')
+
+
+	print('\tmax= %s ; min= %s ; mean= %s ; std= %s' %(maxNbSimSongs, minNbSimSongs,
+	                                                 round(mean, 2), round(std,2)))
+
+	pyplot.savefig('testhisto_fig.pdf', dpi= 100)
+	pyplot.show()
+	return "Similarity Stats computed"
+"""
+#print "TESTS"
+s=[0,3,1,3,1,2,0,1,0,0,2,1,1,4,1,0,2,1,0,1,0,0,0,0,1,0,0,1]
+print computeSimilarityStats(s)
+"""
+#-----------------------------------------------------------------------------
+
