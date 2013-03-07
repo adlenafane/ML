@@ -1,6 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
 	<div>
+		<h3>Please pick a file to get the similar songs</h3>
+		<p class="text-info">No the results are not hardcoded :)</p>
+		<form action="similarSong" method="get">
+			<fieldset>
+				{% for filename in filenames %}
+					<label class="radio">
+						<input type="radio" name='filename' value={{filename}}>
+						{{filename}}
+					</label>
+				{% endfor %}
+				<input type="search" name="clusters" placeholder="Name of the dump">
+				<p class="text-info">File must be in the cluster folder and must be a cPickle dump, do not forget the extension!</p>
+				<br>
+				<label><strong>Select Base Clusters</strong></label>
+				<button type="submit" class="btn btn-primary">Submit</button>
+			</fieldset>
+			<br>
+		</form>
+		<p class="text-info">Below options are not functional (yet)</p>
 		{% if searchOk %}
 			<h3>Gotcha!</h3>
 			<form action="similarSong" method="get">

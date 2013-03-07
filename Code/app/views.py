@@ -3,6 +3,7 @@ from flask import render_template, request
 from app import app
 from createVectorCluster import createDesiredVector
 from createVectorCluster import findBestCluster
+from createVectorCluster import strtimedelta
 from kMean import kmeanTreatment
 from meanShift import meanShiftTreatment
 from pyechonest import config
@@ -11,6 +12,7 @@ from collections import OrderedDict
 import operator
 import requests
 import cPickle
+import time
 config.ECHO_NEST_API_KEY = "JKVBCIDFBTBNKAVH0"
 
 @app.route('/')
@@ -106,17 +108,20 @@ def getClustersResult():
     data_name = request.args.get('dataname', '')
     kmean_number = request.args.get('kmeannumber', '')
     if data_name == '':
-        data_name = 'normOutputCleanTest.txt'
+        data_name = 'normOutputCleanevaluation.txt'
     data_path = './dump/' + data_name
     method = request.args.get('method', '')
 
     # Use the method send to clusterize the data
+    t1 = time.time()
     if method == 'kmean':
         clusterList, barycentersList, infosList = kmeanTreatment(data_path, int(kmean_number))
     elif method == 'meanshift':
         clusterList, barycentersList, infosList = meanShiftTreatment(data_path)
     else:
         clusterList, barycentersList, infosList = kmeanTreatment(data_path, 4)
+    t2 = time.time()
+    print 'Clusterized in:', strtimedelta(t1,t2)
 
     clusterNumber = range(len(clusterList))
     cluster_mbtags = []
@@ -144,16 +149,30 @@ def getClustersResult():
 def findTrack():
     track = request.args.get('song', '')
     artist = request.args.get('artist', '')
+    filenames = ['TRBIJES12903CF5B12.h5', \
+                'TRBIJFB128F92ED124.h5', \
+                'TRBIJFO128F42990C5.h5', \
+                'TRBIJIA128F425F57D.h5', \
+                'TRBIJIP128F9334953.h5', \
+                'TRBIJKN12903CBF11B.h5', \
+                'TRBIJLT12903CE7070.h5', \
+                'TRBIJMU12903CF892B.h5', \
+                'TRBIJNF128F14815A7.h5', \
+                'TRBIJNK128F93093EC.h5', \
+                'TRBIJRN128F425F3DD.h5', \
+                'TRBIJYB128F14AE326.h5']
     if track == '' or artist == '':
         return render_template('tracksearch.html',
-            searchOk = False)
+            searchOk = False,
+            filenames = filenames)
     else:
         # Find the requested song with echonest API
         result = song.search(artist = artist, title = track)[0]
 
         return render_template('tracksearch.html',
             searchOk = True,
-            result = result)
+            result = result,
+            filenames = filenames)
 
 @app.route('/similarSong')
 def findSimilarSong():
@@ -161,21 +180,18 @@ def findSimilarSong():
     # track = request.args.get('song', '')
     # artist = request.args.get('artist', '')
     # url = request.args.get('url', '')
+    _filename = request.args.get('filename', '')
+    file_path = '../MillionSongSubset/data/B/I/J/' + _filename
     clusterfile = request.args.get('clusters', '')
     if clusterfile == '':
         ''' Define a default value !!'''
-        clusterfile = 'kmeannormOutputCleanAdlen.txt'
+        clusterfile = 'kmean10normOutputCleanevaluation.txt'
         pass
     cluster_path = path + clusterfile
     # result = song.search(artist = artist, title = track)[0]
     # res = requests.get(url)
     # res_json = res.json()
-    closest_center_number, song_vector, clusterList, barycentersList, infosList = findBestCluster(cluster_path)
-    print closest_center_number
-    # print song_vector
-    # print clusterList
-    # print barycentersList
-    # print infosList
+    closest_center_number, song_vector, clusterList, barycentersList, infosList = findBestCluster(cluster_path, file_path)
 
     # sorted_artists = OrderedDict(sorted(sorted_artists.items(), key=lambda t: -t[1]))
     sorted_artists = sorted(infosList[0][0].iteritems(), key=operator.itemgetter(1), reverse = True)
