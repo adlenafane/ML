@@ -50,7 +50,32 @@ def recoupement(entryList):
 	print "Number of similar songs in LastFm dataset is %d" %len(entryList)
 	print "Number of similar songs in LastFm dataset available in our dataset is %d" %len(similarList)
 	return similarList
-
+"""
 for element in [entryList1,entryList2,entryList3,entryList4,entryList5,entryList6,entryList7,entryList8,entryList9,entryList10]:
 	print recoupement(element)
+"""
 #-----------------------------------------------------------------------------
+def getTracksInSubset(entryList):
+	similarList=[]
+	for trackId,score in entryList:
+		q = "SELECT 1 FROM songs WHERE track_id='%s'" %trackId
+		res = conn.execute(q)
+		queryResult = res.fetchone()
+		if queryResult !=None:
+			similarList.append([trackId,score])
+	return similarList
+
+
+#-----------------------------------------------------------------------------
+def getInfosFromSimilarSongsInSubset(entryList):
+	similarList=[]
+	for trackId,score in entryList:
+		q = "SELECT title,release,year,artist_name FROM songs WHERE track_id='%s'" %trackId
+		res = conn.execute(q)
+		queryResult = res.fetchone()
+		if queryResult !=None:
+			similarList.append([trackId,score]+list(queryResult))
+
+	return similarList
+
+#print getInfosFromSimilarSongsInSubset(entryList9)
