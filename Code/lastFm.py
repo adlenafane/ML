@@ -59,9 +59,10 @@ def generateSimilDic(trackList):
 #print generateSimilDic(getTrackIdList("/Users/nicolas/Documents/2012-2013/APA/Projet/rawOutputtrackid.txt"))
 #------------------------------------------------------------------------------ 
 #Generate stats about similarity set
-with open("/Users/nicolas/Documents/2012-2013/APA/Projet/ML2/similarityDic.txt", 'rb') as f:
-	X = cPickle.load(f)
-print computeSimilarityStats(preprocessForSimilarity(X))
+
+#with open("/Users/nicolas/Documents/2012-2013/APA/Projet/ML2/similarityDic.txt", 'rb') as f:
+#	X = cPickle.load(f)
+#print computeSimilarityStats(preprocessForSimilarity(X))
 
 #------------------------------------------------------------------------------ 
 #TESTS
