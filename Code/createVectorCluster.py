@@ -108,7 +108,7 @@ def func_to_get_desired_values(filename, returnValue = False):
                 pass
         record.append(result)
 
-    song_id = GETTERS.get_song_id(h5)
+    song_id = GETTERS.get_track_id(h5)
     artist_name = GETTERS.get_artist_name(h5)
     title = GETTERS.get_title(h5)
     artist_mbtags = GETTERS.get_artist_mbtags(h5)
@@ -276,7 +276,7 @@ def createDesiredVector(elementsRequestedInput, filename):
 
     return all_desired_data, all_desired_data_normalized
 
-def findBestCluster(cluster_path):
+def findBestCluster(cluster_path, song_path = msd_subset_data_path + '/B/I/J/TRBIJYB128F14AE326.h5'):
     global elementsRequested
 
     print "cluster_path", cluster_path
@@ -287,17 +287,6 @@ def findBestCluster(cluster_path):
         infosList = X[2]
     elementsRequested = clusterList[0][0][3]
     song_vector = []
-    # for feature in featuresInCluster:
-    #     print feature[4:]
-    #     if feature[4:] in ("num_samples", "duration", "sample_md5", "decoder", "offset_seconds", \
-    #         "window_seconds", "analysis_sample_rate", "analysis_channels", "end_of_fade_in", "start_of_fade_out",\
-    #         "loudness", "tempo", "tempo_confidence", "time_signature", "time_signature_confidence", "key", "key_confidence", "mode", "mode_confidence") :
-    #         song_vector.append(res_json['track'][feature[4:]])
-    #         print res_json['track'][feature[4:]]
-    #     else:
-    #         song_vector.append(res_json[feature[4:]])
-    #         print res_json[feature[4:]]
-    song_path = msd_subset_data_path + '/B/I/J/TRBIJYB128F14AE326.h5'
     song_vector = func_to_get_desired_values(song_path, True)
     song_record = np.array(song_vector[1])
     scalar_product = np.zeros([len(barycentersList)])
@@ -311,3 +300,15 @@ def findBestCluster(cluster_path):
     closestCenter = np.argmin(scalar_product)
 
     return closestCenter, song_vector, clusterList, barycentersList, infosList
+
+# Beginning of getters for the echonest API
+# for feature in featuresInCluster:
+#     print feature[4:]
+#     if feature[4:] in ("num_samples", "duration", "sample_md5", "decoder", "offset_seconds", \
+#         "window_seconds", "analysis_sample_rate", "analysis_channels", "end_of_fade_in", "start_of_fade_out",\
+#         "loudness", "tempo", "tempo_confidence", "time_signature", "time_signature_confidence", "key", "key_confidence", "mode", "mode_confidence") :
+#         song_vector.append(res_json['track'][feature[4:]])
+#         print res_json['track'][feature[4:]]
+#     else:
+#         song_vector.append(res_json[feature[4:]])
+#         print res_json[feature[4:]]
