@@ -112,7 +112,7 @@ def getClustersResult():
 
     # Use the method send to clusterize the data
     if method == 'kmean':
-        clusterList, barycentersList, infosList = kmeanTreatment(data_path, kmean_number)
+        clusterList, barycentersList, infosList = kmeanTreatment(data_path, int(kmean_number))
     elif method == 'meanshift':
         clusterList, barycentersList, infosList = meanShiftTreatment(data_path)
     else:

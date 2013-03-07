@@ -14,7 +14,7 @@ def prepareData(rawData):
 		result.append(elementList[1])
 	return np.asarray(result)
 
-def applyMeanShift(data,quantileValue=0.2,clusterall=False):
+def applyMeanShift(data,quantileValue=0.2,clusterall=True):
 	result=[]
 	n_samples=len(data)
 	print "Nombre de points du dataset: %d" %n_samples
