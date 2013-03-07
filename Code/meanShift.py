@@ -85,5 +85,5 @@ print applyMeanShift(dataToCluster)
 print 50*"_"
 print "meanShiftTreatment: "
 print meanShiftTreatment('/Users/nicolas/Documents/2012-2013/APA/Tests Algos/normOutputCleanTest.txt')
-"""
 print meanShiftTreatment('/Users/nicolas/Documents/2012-2013/APA/Tests Algos/normOutputCleanNicoKmeans4.txt')
+"""
