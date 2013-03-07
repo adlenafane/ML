@@ -7,6 +7,8 @@ from kMean import kmeanTreatment
 from meanShift import meanShiftTreatment
 from pyechonest import config
 from pyechonest import song
+from collections import OrderedDict
+import operator
 import requests
 import cPickle
 config.ECHO_NEST_API_KEY = "JKVBCIDFBTBNKAVH0"
@@ -145,9 +147,9 @@ def findTrack():
 @app.route('/similarSong')
 def findSimilarSong():
     path = './cluster/'
-    track = request.args.get('song', '')
-    artist = request.args.get('artist', '')
-    url = request.args.get('url', '')
+    # track = request.args.get('song', '')
+    # artist = request.args.get('artist', '')
+    # url = request.args.get('url', '')
     clusterfile = request.args.get('clusters', '')
     if clusterfile == '':
         ''' Define a default value !!'''
@@ -157,6 +159,22 @@ def findSimilarSong():
     # result = song.search(artist = artist, title = track)[0]
     # res = requests.get(url)
     # res_json = res.json()
-    a = findBestCluster(cluster_path)
+    closest_center_number, song_vector, clusterList, barycentersList, infosList = findBestCluster(cluster_path)
+    print closest_center_number
+    # print song_vector
+    # print clusterList
+    # print barycentersList
+    # print infosList
+
+    # sorted_artists = OrderedDict(sorted(sorted_artists.items(), key=lambda t: -t[1]))
+    sorted_artists = sorted(infosList[0][0].iteritems(), key=operator.itemgetter(1), reverse = True)
+    print sorted_artists
+
     return render_template('similarsong.html', 
-        result = a) 
+        closest_center_number = closest_center_number, 
+        song_vector = song_vector,
+        closest_center = barycentersList[closest_center_number],
+        centers = barycentersList,
+        centers_number = range(len(barycentersList)),
+        similar_songs = infosList[1][closest_center_number],
+        similar_artists = sorted_artists)

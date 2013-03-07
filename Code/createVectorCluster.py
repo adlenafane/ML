@@ -306,4 +306,5 @@ def findBestCluster(cluster_path):
         scalar_product[index] = np.dot(center, song_record)
         index+=1
     closestCenter = np.argmin(scalar_product)
-    return closestCenter
+
+    return closestCenter, song_vector, clusterList, barycentersList, infosList

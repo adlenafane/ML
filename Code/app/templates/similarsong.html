@@ -2,6 +2,57 @@
 {% block content %}
 	<h1>Similar Songs</h1>
 	<div>
-		{{result}}
+		<h3>Song Requested</h3>
+		<p><strong>Title:</strong> {{song_vector[0][1]}}</p>
+		<p><strong>Artist:</strong> {{song_vector[0][2]}}</p>
+	</div>
+	<div>
+		<h3>Results</h3>
+		<table class="table table-hover table-condensed">
+			<thead>
+				<tr>
+					<th>
+						Name
+					</th>
+					{% for feature in  song_vector[0][0][3]%}
+						<th>
+							{{feature}}
+						</th>
+					{% endfor %}
+				</tr>
+			</thead>
+			<tbody>
+				<tr class="success">
+					<td>
+						{{song_vector[0][1]}}
+					</td>
+					{% for coordinate in song_vector[1] %}
+					<td>
+						{{coordinate}}
+					</td>
+					{% endfor %}
+				</tr>
+				{% for i in centers_number %}
+				<tr {% if i == closest_center_number%} class="success" {%endif%}>
+					<td>
+						Center {{i}}
+					</td>
+					{% for coordinate in centers[i] %}
+					<td>
+						{{coordinate}}
+					</td>
+					{% endfor %}
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		<h4>Similar Songs</h4>
+		{% for key in similar_songs.keys() %}
+			<span>{{key}}</span> | 
+		{% endfor %}
+		<h4>Similar Artists</h4>
+		{% for element in similar_artists %}
+			<span>{{element[0]}} - {{element[1]}}</span> | 
+		{% endfor %}
 	</div>
 {% endblock %}
