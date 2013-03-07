@@ -53,7 +53,7 @@ def index():
         {"function": 'get_tempo', "description": "FLOAT - tempo"},\
         {"function": 'get_time_signature', "description": "INT - time signature"},\
         {"function": 'get_time_signature_confidence', "description": "FLOAT - time signature confidence"},\
-        #{"function": 'get_track_id', "description": "STRING - track id"},\
+        {"function": 'get_track_id', "description": "STRING - track id"},\
         {"function": 'get_segments_start', "description": "ARRAY FLOAT - segments start"},\
         {"function": 'get_segments_confidence', "description": "ARRAY FLOAT - segments confidence"},\
         {"function": 'get_segments_pitches', "description": "2D ARRAY FLOAT - segments pitches"},\
@@ -117,6 +117,15 @@ def getClustersResult():
     else:
         clusterList, barycentersList, infosList = kmeanTreatment(data_path, 4)
 
+    clusterNumber = range(len(clusterList))
+    cluster_mbtags = []
+    for i in clusterNumber:
+        artist_number = len(infosList[0][i])
+        temp_dic = {}
+        for k, v in infosList[2][i].iteritems():
+            temp_dic[k] = format(float(v)*100 / artist_number, '.2f')
+        cluster_mbtags.append(sorted(temp_dic.iteritems(), key=operator.itemgetter(1), reverse = True))
+
     # Make a dump of the results!
     with open('./cluster/' + method + data_name, 'wb') as f:
         cPickle.dump([clusterList, barycentersList, infosList], f)
@@ -124,10 +133,11 @@ def getClustersResult():
     return render_template('clusteringresult.html', 
         datapath = data_path,
         method = method,
-        clusterNumber = range(len(clusterList)),
+        clusterNumber = clusterNumber,
         clusterList = clusterList,
         barycentersList = barycentersList,
-        infosList = infosList)
+        infosList = infosList,
+        mbtags_sorted = cluster_mbtags)
 
 @app.route('/trackSearch')
 def findTrack():

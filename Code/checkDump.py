@@ -11,3 +11,5 @@ def checkDump(filename = './dump/normOutputCleanadlen.txt'):
 		for tag in x[0][3]:
 			print tag
 	return X
+
+checkDump('./dump/rawOutputtrackid.txt')

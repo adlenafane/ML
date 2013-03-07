@@ -60,13 +60,16 @@ def apply_to_all_files(basedir, func=lambda x: x,ext='.h5'):
         cnt += len(files)
         # apply function to all files
         for f in files :
-            if count < 1500:
-                func(f)
-            else:
-                break
+            print count
+            func(f)
             count+=1
-        if count >= 1500:
-            break
+        #     if count < 1500:
+        #         func(f)
+        #     else:
+        #         break
+        #     count+=1
+        # if count >= 1500:
+        #     break
     return cnt
 
 # we define the function to apply to al_l files

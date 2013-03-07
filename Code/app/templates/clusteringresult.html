@@ -48,7 +48,7 @@
 			</table>
 			<p>Artists: {{infosList[0][i]}}</p>
 			<p>Titles: {{infosList[1][i]}}</p>
-			<p>Artists mbtags: {{infosList[2][i]}}</p>
+			<p>Artists mbtags: {{mbtags_sorted[i]}}</p>
 			<p>Release: {{infosList[3][i]}}</p>
 		{%  endfor %}
 		<h3>Centers comparison</h3>
@@ -74,6 +74,23 @@
 						{% for coordinate in barycentersList[i]%}
 						<td>
 							{{coordinate}}
+						</td>
+						{% endfor %}
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		<h3>Mbtags comparison</h3>
+		<table class="table table-hover table-condensed">
+			<tbody>
+				{% for i in clusterNumber %}
+					<tr>
+						<td>
+							Cluster {{i}}
+						</td>
+						{% for value in mbtags_sorted[i][:8] %}
+						<td>
+							{{value}}
 						</td>
 						{% endfor %}
 					</tr>
