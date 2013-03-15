@@ -42,8 +42,28 @@ def getClusteringScore(clusterList,similDic):
 						score = score + similTrack[1]*1
 
 	return score
+
+def getClusteringScoreFromFile(cluster_path, dic_path = './dic/similarityDic.txt'):
+	with open(cluster_path, 'rb') as f:
+		X = cPickle.load(f)
+		clusterList = X[0]
+		lst=[]
+		for cluster in range(len(clusterList)):
+			lstcluster=[]
+			for element in clusterList[cluster]:
+				lstcluster.append(element[0])
+			lst.append(lstcluster)
+	with open(dic_path, 'rb') as f:
+			similDic = cPickle.load(f)
+	with open('./score/score.txt', 'a') as f:
+		f.write(str(cluster_path) + ' - ' + str(getClusteringScore(lst, similDic)) + '\n')
+	return [cluster_path, getClusteringScore(lst, similDic)]
+
 #------------------------------------------------------------------------------ 
 #TESTS
+
+#getClusteringScoreFromFile('./cluster/kmean10normOutputCleanevaluation.txt')
+
 """
 with open("/Users/nicolas/Documents/2012-2013/APA/Projet/ML2/similarityDic.txt", 'rb') as f:
 	X = cPickle.load(f)

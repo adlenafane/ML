@@ -195,7 +195,13 @@ def findSimilarSong():
 
     # sorted_artists = OrderedDict(sorted(sorted_artists.items(), key=lambda t: -t[1]))
     sorted_artists = sorted(infosList[0][0].iteritems(), key=operator.itemgetter(1), reverse = True)
-    print sorted_artists
+
+    i=0
+    similar_songs_extract = {}
+    for k in infosList[1][closest_center_number].keys():
+        if i < 10:
+            similar_songs_extract[k] = infosList[1][closest_center_number][k]
+        i+=1
 
     return render_template('similarsong.html', 
         closest_center_number = closest_center_number, 
@@ -204,4 +210,5 @@ def findSimilarSong():
         centers = barycentersList,
         centers_number = range(len(barycentersList)),
         similar_songs = infosList[1][closest_center_number],
+        similar_songs_extract = similar_songs_extract,
         similar_artists = sorted_artists)
