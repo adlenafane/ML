@@ -3,3 +3,11 @@
 *.PNG
 /MillionSongSubset
 sqlitedb_lookup.py
+/Code/cluster
+/Code/cluster_clean
+/Code/dic
+/Code/dump
+*.pdf
+*.xlsx
+*.docs
+*.pptx
